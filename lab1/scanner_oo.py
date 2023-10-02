@@ -16,8 +16,6 @@ class Scanner(Lexer):
     @_(r'\n+')
     def ignore_newline(self, t):
         self.lineno += len(t.value)
-
-    
     
     ID= r'[A-Za-z_][A-Za-z0-9_]*'
     INTNUM= r'[1-9]\d*'
@@ -61,8 +59,7 @@ class Scanner(Lexer):
     CONTINUE= r'continue'
     RETURN= r'return'
     EYE= r'eye'
-    ZEROS= r'zeros'
+    # ZEROS= r'zeros'
+    ID['zeros'] = ZEROS
     ONES= r'ones'
     PRINT= r'print'
-    
-    

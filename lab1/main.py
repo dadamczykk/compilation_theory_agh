@@ -23,4 +23,4 @@ if __name__ == '__main__':
 
     # Tokenize
     for tok in lexer.tokenize(text):
-        print(tok)
+        print(f'({tok.lineno}): {tok.type}({tok.value})')
