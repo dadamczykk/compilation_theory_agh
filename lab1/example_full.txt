@@ -27,6 +27,11 @@ if (m==n) {
 -100
 200
 _alamakot221122
+.
+<=
+>=
++= -=
+=
+==
 
-
-"a to coś to jest text 10101 101 101 liczby ma hahaha +- +- "
+"a to coś to jest text 10101 101 101 liczby ma hahaha +- +-"

@@ -56,12 +56,13 @@ class Scanner(Lexer):
     MULTIPLYASSIGN = r'\*='
     DIVIDEASSIGN = r'/='
 
-    LT = r'<'
-    GT = r'>'
     LTE = r'<='
     GTE = r'>='
     EQ = r'=='
     NEQ = r'!='
+    LT = r'<'
+    GT = r'>'
+
 
     ID = r'[A-Za-z_][A-Za-z0-9_]*'
     ID['if'] = IF
