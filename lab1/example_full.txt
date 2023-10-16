@@ -10,8 +10,9 @@ E1 = [ [ 1, 2, 3],
        [ 4, 5, 6],
        [ 7, 8, 9] ];
 
-res1 = 60.500;
-res2 = 60.;
+res1 = 60.500-41.6;
+res2 = .e10;
+.
 res3 = .500;
 res4 = 60.52E2;
 str = "Hello world";
@@ -35,3 +36,19 @@ _alamakot221122
 ==
 
 "a to coś to jest text 10101 101 101 liczby ma hahaha +- +-"
+
+
+temp__ = 5
+
+___
+0
+0.0
+0003.8
+000
+20e3
+.e3
+0.e3
+
+007
+
+"ala ma  kota"

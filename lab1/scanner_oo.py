@@ -29,8 +29,10 @@ class Scanner(Lexer):
     def ignore_newline(self, t):
         self.lineno += len(t.value)
 
-    FLOATNUM = r'[+-]?(\d*\.\d*[eE][+-]?\d+|\d+[eE][+-]?\d+|\d+\.\d+|\d+\.|\.\d+)'
-    INTNUM = r'([+-]?[1-9]\d*|0)'
+
+
+    FLOATNUM = r'((\d+\.(\d*)?|\.\d+)([eE][-+]?\d+)?|(\d+[eE][-+]?\d+))'
+    INTNUM = r'(\d+)'
     STRING = r'\"[^\"]*\"'
 
     def FLOATNUM(self, t):
@@ -42,7 +44,8 @@ class Scanner(Lexer):
         return t
 
     def STRING(self, t):
-        t.value = str(t.value)
+        t.value = str(t.value)[1:-1]
+
         return t
 
 
