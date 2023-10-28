@@ -6,7 +6,7 @@ Rule 2     instructions_or_empty -> <empty>
 Rule 3     instructions_or_empty -> instructions
 Rule 4     instructions -> instruction
 Rule 5     instructions -> instructions instruction
-Rule 6     instruction -> { instructions }  [precedence=right, level=4]
+Rule 6     instruction -> { instructions }
 Rule 7     instruction -> print_i ;
 Rule 8     instruction -> assign ;
 Rule 9     instruction -> while_l
@@ -15,54 +15,54 @@ Rule 11    instruction -> CONTINUE ;
 Rule 12    instruction -> BREAK ;
 Rule 13    instruction -> return_i ;
 Rule 14    instruction -> if_i
-Rule 15    if_i -> IF ( expr ) instruction ELSE instruction  [precedence=right, level=3]
-Rule 16    if_i -> IF ( expr ) instruction  [precedence=right, level=2]
-Rule 17    while_l -> WHILE ( expr ) instruction  [precedence=right, level=1]
+Rule 15    if_i -> IF ( expr ) instruction ELSE instruction  [precedence=right, level=2]
+Rule 16    if_i -> IF ( expr ) instruction  [precedence=right, level=1]
+Rule 17    while_l -> WHILE ( expr ) instruction
 Rule 18    for_l -> FOR ID = expr : expr instruction
 Rule 19    return_i -> RETURN expr
 Rule 20    return_i -> RETURN
 Rule 21    print_i -> PRINT printargs
 Rule 22    printargs -> expr
 Rule 23    printargs -> expr , printargs
-Rule 24    expr -> mat_fun ( expr )  [precedence=right, level=1]
+Rule 24    expr -> mat_fun ( expr )
 Rule 25    expr -> matrix
-Rule 26    expr -> expr DOTMINUS expr  [precedence=left, level=8]
-Rule 27    expr -> expr DOTPLUS expr  [precedence=left, level=8]
-Rule 28    expr -> expr DOTDIVIDE expr  [precedence=left, level=9]
-Rule 29    expr -> expr DOTMULTIPLY expr  [precedence=left, level=9]
-Rule 30    expr -> expr OR expr  [precedence=left, level=11]
-Rule 31    expr -> expr AND expr  [precedence=left, level=11]
-Rule 32    expr -> expr XOR expr  [precedence=left, level=11]
-Rule 33    expr -> expr GTE expr  [precedence=nonassoc, level=12]
-Rule 34    expr -> expr LTE expr  [precedence=nonassoc, level=12]
-Rule 35    expr -> expr GT expr  [precedence=nonassoc, level=12]
-Rule 36    expr -> expr LT expr  [precedence=nonassoc, level=12]
-Rule 37    expr -> expr NEQ expr  [precedence=nonassoc, level=12]
-Rule 38    expr -> expr EQ expr  [precedence=nonassoc, level=12]
-Rule 39    expr -> expr / expr  [precedence=left, level=7]
-Rule 40    expr -> expr * expr  [precedence=left, level=7]
-Rule 41    expr -> expr - expr  [precedence=left, level=6]
-Rule 42    expr -> expr + expr  [precedence=left, level=6]
-Rule 43    expr -> expr '  [precedence=left, level=13]
-Rule 44    expr -> NOT expr  [precedence=right, level=14]
-Rule 45    expr -> - expr  [precedence=right, level=14]
+Rule 26    expr -> expr DOTMINUS expr  [precedence=left, level=6]
+Rule 27    expr -> expr DOTPLUS expr  [precedence=left, level=6]
+Rule 28    expr -> expr DOTDIVIDE expr  [precedence=left, level=7]
+Rule 29    expr -> expr DOTMULTIPLY expr  [precedence=left, level=7]
+Rule 30    expr -> expr OR expr  [precedence=left, level=9]
+Rule 31    expr -> expr AND expr  [precedence=left, level=9]
+Rule 32    expr -> expr XOR expr  [precedence=left, level=9]
+Rule 33    expr -> expr GTE expr  [precedence=nonassoc, level=10]
+Rule 34    expr -> expr LTE expr  [precedence=nonassoc, level=10]
+Rule 35    expr -> expr GT expr  [precedence=nonassoc, level=10]
+Rule 36    expr -> expr LT expr  [precedence=nonassoc, level=10]
+Rule 37    expr -> expr NEQ expr  [precedence=nonassoc, level=10]
+Rule 38    expr -> expr EQ expr  [precedence=nonassoc, level=10]
+Rule 39    expr -> expr / expr  [precedence=left, level=5]
+Rule 40    expr -> expr * expr  [precedence=left, level=5]
+Rule 41    expr -> expr - expr  [precedence=left, level=4]
+Rule 42    expr -> expr + expr  [precedence=left, level=4]
+Rule 43    expr -> expr '  [precedence=left, level=11]
+Rule 44    expr -> NOT expr  [precedence=right, level=12]
+Rule 45    expr -> - expr  [precedence=right, level=12]
 Rule 46    expr -> STRING
 Rule 47    expr -> FLOATNUM
 Rule 48    expr -> INTNUM
-Rule 49    expr -> ( expr )  [precedence=right, level=1]
+Rule 49    expr -> ( expr )
 Rule 50    expr -> var
 Rule 51    var -> matel
 Rule 52    var -> ID
-Rule 53    matel -> ID [ expr , expr ]  [precedence=right, level=4]
-Rule 54    assign -> var DIVIDEASSIGN expr  [precedence=left, level=10]
-Rule 55    assign -> var MULTIPLYASSIGN expr  [precedence=left, level=10]
-Rule 56    assign -> var MINUSASSIGN expr  [precedence=left, level=10]
-Rule 57    assign -> var PLUSASSIGN expr  [precedence=left, level=10]
-Rule 58    assign -> var = expr  [precedence=left, level=10]
-Rule 59    matrix -> [ vectors ]  [precedence=right, level=4]
+Rule 53    matel -> ID [ expr , expr ]
+Rule 54    assign -> var DIVIDEASSIGN expr  [precedence=left, level=8]
+Rule 55    assign -> var MULTIPLYASSIGN expr  [precedence=left, level=8]
+Rule 56    assign -> var MINUSASSIGN expr  [precedence=left, level=8]
+Rule 57    assign -> var PLUSASSIGN expr  [precedence=left, level=8]
+Rule 58    assign -> var = expr  [precedence=left, level=8]
+Rule 59    matrix -> [ vectors ]
 Rule 60    vectors -> vector
 Rule 61    vectors -> vectors , vector
-Rule 62    vector -> [ variables ]  [precedence=right, level=4]
+Rule 62    vector -> [ variables ]
 Rule 63    variables -> variable
 Rule 64    variables -> variables , variable
 Rule 65    variable -> expr

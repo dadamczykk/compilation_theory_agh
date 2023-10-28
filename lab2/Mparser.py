@@ -9,11 +9,10 @@ class MatrixParser(Parser):
 
     # Priorytety operacji
     precedence = (
-        ('right', "(", ")"),
+        # ('right', "(", ")"),
         ('right', IFX),
         ('right', ELSE),
-        # ('nonassoc', CONTINUE, BREAK),
-        ('right', "{", "}", "[", "]"),
+        # ('right', "{", "}", "[", "]"),
         #
         ('right',  FOR, WHILE),
 
