@@ -4,8 +4,10 @@ class Scanner(Lexer):
     tokens = {
         DOTPLUS, DOTMINUS, DOTMULTIPLY, DOTDIVIDE,
         PLUSASSIGN, MINUSASSIGN, MULTIPLYASSIGN, DIVIDEASSIGN,
+        # PLUS, MINUS, MULTIPLY, DIVIDE, ASSIGN,
         LT, GT, LTE, GTE, EQ, NEQ,
         IF, ELSE, FOR, WHILE,
+        AND, OR, XOR, NOT,
         BREAK, CONTINUE, RETURN,
         EYE, ZEROS, ONES,
         PRINT,
@@ -15,7 +17,8 @@ class Scanner(Lexer):
         STRING
     }
 
-    literals = {'+', '-', '*', '/',
+    literals = {
+                '+', '-', '*', '/',
                 '=',
                 '(', ')', '[', ']', '{', '}',
                 ':',
@@ -59,6 +62,12 @@ class Scanner(Lexer):
     MULTIPLYASSIGN = r'\*='
     DIVIDEASSIGN = r'/='
 
+    # PLUS = r'\+'
+    # MINUS = r'-'
+    # MULTIPLY = r'\*'
+    # DIVIDE = r'/'
+    # ASSIGN = r'='
+
     LTE = r'<='
     GTE = r'>='
     EQ = r'=='
@@ -79,6 +88,10 @@ class Scanner(Lexer):
     ID['zeros'] = ZEROS
     ID['ones'] = ONES
     ID['print'] = PRINT
+    ID['and'] = AND
+    ID['or'] = OR
+    ID['xor'] = XOR
+    ID['not'] = NOT
 
     def error(self, t):
         print(f"({t.lineno}) illegal character '{t.value[0]}'")
