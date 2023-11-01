@@ -2,29 +2,26 @@ from lab1.scanner_oo import Scanner
 from sly import Parser
 
 
+def print_error(p, message):
+    p = p.error
+    print("Syntax error in {0}, at line {1}: LexToken({2}, '{3}')".format(message, p.lineno, p.type, p.value))
+
+
 class MatrixParser(Parser):
     tokens = Scanner.tokens
     debugfile = 'parser.out'
 
     # Priorytety operacji
     precedence = (
-        # ('right', "(", ")"),
         ('right', IFX),
         ('right', ELSE),
-        # ('right', "{", "}", "[", "]"),
-        #
-        ('right', FOR, WHILE),
-
+        ('left', AND, OR, XOR),
         ('left', "+", "-"),
         ('left', "*", "/"),
         ('left', DOTPLUS, DOTMINUS),
         ('left', DOTMULTIPLY, DOTDIVIDE),
-
-        ('left', "=", PLUSASSIGN, MINUSASSIGN, MULTIPLYASSIGN, DIVIDEASSIGN),
-        ('left', AND, OR, XOR),
         ('nonassoc', LTE, GTE, EQ, NEQ, LT, GT),
-
-        ('left', TRANSPOSE),
+        # ('left', TRANSPOSE),
         ('right', UNEG, UMINUS),
 
     )
@@ -65,23 +62,49 @@ class MatrixParser(Parser):
     def if_i(self, p):
         return p
 
-    @_('WHILE "(" expr ")" instruction',
-       )
+    @_('IF "(" error ")" instruction %prec IFX',
+       'IF "(" error ")" instruction ELSE instruction',
+       'IF "(" expr ")" error %prec IFX',
+       'IF "(" expr ")" error ELSE instruction',
+       'IF "(" expr ")" instruction ELSE error')
+    def if_i(self, p):
+        print_error(p, "if statement")
+    @_('WHILE "(" expr ")" instruction')
     def while_l(self, p):
         return p
 
-    @_('FOR ID "=" expr ":" expr instruction')
+    @_('WHILE "(" error ")" instruction',
+       'WHILE "(" expr ")" error')
+    def while_l(self, p):
+        print_error(p, "while loop")
+
+    @_('FOR ID "=" expr ":" expr instruction',)
     def for_l(self, p):
         return p
+
+    @_('FOR ID "=" error ":" expr instruction',
+       'FOR ID "=" expr ":" error instruction',
+       'FOR ID "=" expr ":" expr error')
+    def for_l(self, p):
+        print_error("for loop")
 
     @_('RETURN',
        'RETURN expr')
     def return_i(self, p):
         return p
 
+    @_('RETURN error')
+    def return_i(self, p):
+        print_error("return statement")
+
+
     @_('PRINT printargs')
     def print_i(self, p):
         return p
+
+    @_('PRINT error')
+    def print_i(self, p):
+        print_error(p, "print function")
 
     @_('expr "," printargs',
        'expr')
@@ -113,9 +136,17 @@ class MatrixParser(Parser):
     def assign(self, p):
         return p
 
+    @_('var "=" error',
+       'var PLUSASSIGN error',
+       'var MINUSASSIGN error',
+       'var MULTIPLYASSIGN error',
+       'var DIVIDEASSIGN error')
+    def assign(self, p):
+        print_error(p, "assigment")
+
     @_('"-" expr %prec UMINUS',
        'NOT expr %prec UNEG',
-       '''expr "'" %prec TRANSPOSE''')
+       '''expr "'"''')
     def expr(self, p):
         return p  # -p.expr
 
@@ -142,7 +173,6 @@ class MatrixParser(Parser):
        )
     def expr(self, p):
         return p
-
     @_('matrix')
     def expr(self, p):
         return p
@@ -173,14 +203,20 @@ class MatrixParser(Parser):
     def expr(self, p):
         return p
 
+    @_('mat_fun "(" error ")"')
+    def expr(self, p):
+        print_error(p, "matrix function")
+
     @_('ZEROS',
        'EYE',
        'ONES')
     def mat_fun(self, p):
         return p
 
-    def error(self, p):
-        if p:
-            print("Syntax error at line {0}: LexToken({1}, '{2}')".format(p.lineno, p.type, p.value))
-        else:
-            print("Unexpected end of input")
+    # def error(self, p):
+    #     if p:
+    #         print("Syntax error at line {0}: LexToken({1}, '{2}')".format(p.lineno, p.type, p.value))
+    #     else:
+    #         print("Unexpected end of input")
+
+
