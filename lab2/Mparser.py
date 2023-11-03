@@ -69,6 +69,7 @@ class MatrixParser(Parser):
        'IF "(" expr ")" instruction ELSE error')
     def if_i(self, p):
         print_error(p, "if statement")
+
     @_('WHILE "(" expr ")" instruction')
     def while_l(self, p):
         return p
@@ -78,7 +79,7 @@ class MatrixParser(Parser):
     def while_l(self, p):
         print_error(p, "while loop")
 
-    @_('FOR ID "=" expr ":" expr instruction',)
+    @_('FOR ID "=" expr ":" expr instruction', )
     def for_l(self, p):
         return p
 
@@ -86,7 +87,7 @@ class MatrixParser(Parser):
        'FOR ID "=" expr ":" error instruction',
        'FOR ID "=" expr ":" expr error')
     def for_l(self, p):
-        print_error("for loop")
+        print_error(p, "for loop")
 
     @_('RETURN',
        'RETURN expr')
@@ -95,8 +96,7 @@ class MatrixParser(Parser):
 
     @_('RETURN error')
     def return_i(self, p):
-        print_error("return statement")
-
+        print_error(p, "return statement")
 
     @_('PRINT printargs')
     def print_i(self, p):
@@ -173,6 +173,7 @@ class MatrixParser(Parser):
        )
     def expr(self, p):
         return p
+
     @_('matrix')
     def expr(self, p):
         return p
@@ -218,5 +219,3 @@ class MatrixParser(Parser):
     #         print("Syntax error at line {0}: LexToken({1}, '{2}')".format(p.lineno, p.type, p.value))
     #     else:
     #         print("Unexpected end of input")
-
-
