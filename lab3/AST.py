@@ -124,6 +124,11 @@ class MatrixFunc(Node):
     expr: Any
 
 
+@dataclass
+class Unary(Node):
+    operation: str
+    expr: Any
+
 class Error(Node):
     def __init__(self):
         pass

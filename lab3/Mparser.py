@@ -14,16 +14,17 @@ class MatrixParser(Parser):
 
     # Priorytety operacji
     precedence = (
+
         ('right', IFX),
         ('right', ELSE),
         ('left', AND, OR, XOR),
-        ('right', "=", "MULTIPLYASSIGN", "DIVIDEASSIGN", "MINUSASSIGN", "PLUSASSIGN"),
+        ('right', "=", MULTIPLYASSIGN, DIVIDEASSIGN, MINUSASSIGN, PLUSASSIGN),
         ('left', "+", "-"),
         ('left', "*", "/"),
-        ('left', "DOTPLUS", "DOTMINUS"),
-        ('left', "DOTMULTIPLY", "DOTDIVIDE"),
+        ('left', DOTPLUS, DOTMINUS),
+        ('left', DOTMULTIPLY, DOTDIVIDE),
         ('nonassoc', LTE, GTE, EQ, NEQ, LT, GT),
-        # ('left', TRANSPOSE),
+        ('left', "\'"),
         ('right', UNEG, UMINUS),
 
     )
@@ -167,18 +168,29 @@ class MatrixParser(Parser):
     def assign(self, p):
         print_error(p, "assigment")
 
-    @_('"-" expr %prec UMINUS')
+
+    @_("unary")
     def expr(self, p):
-        return AST.Uminus(p[1])
+        return p[0]
+
+
+    @_('"-" expr %prec UMINUS')
+    def unary(self, p):
+        return AST.Unary("UMINUS", p[1])
 
     @_('NOT expr %prec UNEG')
-    def expr(self, p):
-        return AST.Uneg(p[1])
+    def unary(self, p):
+        return AST.Unary("UNEG", p[1])
 
-    @_('''expr "'" ''')
-    def expr(self, p):
+    @_('expr "\'"')
+    def unary(self, p):
         print(p[0])
-        return AST.Transpose(p[0])
+        return AST.Unary("TRANSPOSE", p[0])
+
+    @_('matrix')
+    def expr(self, p):
+        return p[0]
+
 
     @_('expr "+" expr',
        'expr "-" expr',
@@ -203,9 +215,7 @@ class MatrixParser(Parser):
     def expr(self, p):
         return AST.BinExpr(p[0], p[1], p[2])
 
-    @_('matrix')
-    def expr(self, p):
-        return p[0]
+
 
     @_('"[" vectors "]"')
     def matrix(self, p):

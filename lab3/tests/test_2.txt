@@ -7,5 +7,6 @@ D2 -= A.-B' ; # substract element-wise A with transpose of B
 D3 *= A.*B' ; # multiply element-wise A with transpose of B
 D4 /= A./B' ; # divide element-wise A with transpose of B
 
-
+A = 2 * 3 + 5';
+B = 2 + 3 * 5;
 

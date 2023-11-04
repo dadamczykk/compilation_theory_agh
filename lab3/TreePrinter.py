@@ -97,6 +97,8 @@ class TreePrinter:
             # print(printarg)
             printarg.printTree(i+1)
 
+
+
     @addToClass(AST.String)
     def printTree(self, i):
         self.print_indent(i)
@@ -165,6 +167,12 @@ class TreePrinter:
         self.print_indent(i)
         print("TRANSPOSE")
         self.val.printTree(i + 1)
+
+    @addToClass(AST.Unary)
+    def printTree(self, i):
+        self.print_indent(i)
+        print(self.operation)
+        self.expr.printTree(i+1)
 
 
     @addToClass(AST.Matrix)
