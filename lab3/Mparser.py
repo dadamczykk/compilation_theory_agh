@@ -49,7 +49,7 @@ class MatrixParser(Parser):
         # print("p0", p[0])
         # if len(p) > 1: print("p1", p[1])
 
-        return p[0] + [p[1]] if len(p) == 2 else [p[0]]
+        return p[0] + p[1] if len(p) == 2 else p[0]
 
     @_('if_i',
        'return_i ";"',
@@ -60,11 +60,11 @@ class MatrixParser(Parser):
        'assign ";"',
        'print_i ";"')
     def instruction(self, p):
-        return p[0]
+        return [p[0]]
 
     @_('"{" instructions "}"')
     def instruction(self, p):
-        return p[1][0]
+        return p[1]
 
     @_('IF "(" expr ")" instruction %prec IFX',
        'IF "(" expr ")" instruction ELSE instruction')
