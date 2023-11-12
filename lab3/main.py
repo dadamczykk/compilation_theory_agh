@@ -12,7 +12,7 @@ if __name__ == "__main__":
     folder_path = 'tests'
     file_list = os.listdir(folder_path)
     for filename in file_list:
-        if filename != "test_5.txt": continue
+        # if filename != "test_5.txt": continue
         file_path = os.path.join(folder_path, filename)
 
         if os.path.isfile(file_path):
@@ -21,8 +21,8 @@ if __name__ == "__main__":
                 print(f'Testing {filename}:')
             try:
                 cos = parser.parse(Scanner().tokenize(file_contents))
-                # print(cos)
-                cos.printTree(0)
+                if cos is not None:
+                    cos.printTree(0)
 
             except LexError as e:
                 print(f"Lexer error: {e}")

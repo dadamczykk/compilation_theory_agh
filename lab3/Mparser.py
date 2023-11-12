@@ -184,7 +184,7 @@ class MatrixParser(Parser):
 
     @_('expr "\'"')
     def unary(self, p):
-        print(p[0])
+        # print(p[0])
         return AST.Unary("TRANSPOSE", p[0])
 
     @_('matrix')
