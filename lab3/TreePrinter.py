@@ -39,15 +39,15 @@ class TreePrinter:
         self.cond.printTree(indent+1)
         self.print_indent(indent)
         print("THEN")
-        for x in self.if_body:
-            x.printTree(indent+1)
-        # self.if_body.printTree(indent+1)
+        # for x in self.if_body:
+        #     x.printTree(indent+1)
+        self.if_body.printTree(indent+1)
         if self.else_body is not None:
             self.print_indent(indent)
             print("ELSE")
-            for x in self.else_body:
-                x.printTree(indent+1)
-            # self.else_body.printTree(indent+1)
+            # for x in self.else_body:
+            #     x.printTree(indent+1)
+            self.else_body.printTree(indent+1)
 
 
     @addToClass(AST.Return)

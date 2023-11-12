@@ -69,7 +69,7 @@ class MatrixParser(Parser):
     @_('IF "(" expr ")" instruction %prec IFX',
        'IF "(" expr ")" instruction ELSE instruction')
     def if_i(self, p):
-        return AST.If(p[2], p[4]) if len(p) == 5 else AST.If(p[2], p[4], p[6])
+        return AST.If(p[2], AST.Instructions(p[4])) if len(p) == 5 else AST.If(p[2], AST.Instructions(p[4]), AST.Instructions(p[6]))
 
     @_('IF "(" error ")" instruction %prec IFX',
        'IF "(" error ")" instruction ELSE instruction',
@@ -81,7 +81,7 @@ class MatrixParser(Parser):
 
     @_('WHILE "(" expr ")" instruction')
     def while_l(self, p):
-        return AST.While(p[2], p[4])
+        return AST.While(p[2], AST.Instructions(p[4]))
 
     @_('WHILE "(" error ")" instruction',
        'WHILE "(" expr ")" error')
@@ -90,7 +90,7 @@ class MatrixParser(Parser):
 
     @_('FOR ID "=" expr ":" expr instruction')
     def for_l(self, p):
-        return AST.For(AST.Id(p[1]), p[3], p[5], p[6])
+        return AST.For(AST.Id(p[1]), p[3], p[5], AST.Instructions(p[6]))
 
     @_('FOR ID "=" error ":" expr instruction',
        'FOR ID "=" expr ":" error instruction',
