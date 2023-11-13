@@ -11,7 +11,6 @@ def print_error(p, message):
 class MatrixParser(Parser):
     tokens = Scanner.tokens
     debugfile = 'parser.out'
-    had_error = False
 
     # Priorytety operacji
     precedence = (
@@ -34,9 +33,6 @@ class MatrixParser(Parser):
 
     @_('instructions_or_empty')
     def program(self, p):
-        if self.had_error:
-            self.had_error = False
-            return None
         return AST.InstrOrEmpty(p[0])
 
     @_('instructions')
@@ -257,9 +253,8 @@ class MatrixParser(Parser):
     def mat_fun(self, p):
         return p[0]
 
-    def error(self, p):
-        self.had_error=True
-        if p:
-            print("Syntax error at line {0}: LexToken({1}, '{2}')".format(p.lineno, p.type, p.value))
-        else:
-            print("Unexpected end of input")
+    # def error(self, p):
+    #     if p:
+    #         print("Syntax error at line {0}: LexToken({1}, '{2}')".format(p.lineno, p.type, p.value))
+    #     else:
+    #         print("Unexpected end of input")
