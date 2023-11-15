@@ -191,9 +191,7 @@ class MatrixParser(Parser):
         # print(p[0])
         return AST.Unary("TRANSPOSE", p[0])
 
-    @_('matrix')
-    def expr(self, p):
-        return p[0]
+
 
 
     @_('expr "+" expr',
@@ -219,29 +217,38 @@ class MatrixParser(Parser):
     def expr(self, p):
         return AST.BinExpr(p[0], p[1], p[2])
 
-
-
-    @_('"[" vectors "]"')
-    def matrix(self, p):
-        return AST.Matrix(p[1])
-
-    @_('vectors "," vector',
-       'vector')
-    def vectors(self, p):
-        return p[0] + [p[2]] if len(p) == 3 else [p[0]]
+    @_('vector')
+    def expr(self, p):
+        return p[0]
 
     @_('"[" variables "]"')
     def vector(self, p):
-        return p[1]
+        return AST.Vector(p[1])
 
-    @_('variables "," variable',
-       'variable')
+    # @_('"[" variables "," matrix "]"')
+    # def matrix(self, p):
+    #     # print(p[1], p[3])
+    #     return AST.Vector(p[1] + [p[3]])
+
+    # @_('vectors "," vector',
+    #    'vector')
+    # def vectors(self, p):
+    #     return p[0] + [p[2]] if len(p) == 3 else [p[0]]\
+
+    # @_('"[" variables "]"')
+    # def variablesgut(self, p):
+    #     return p[1]
+
+
+
+    @_('variables "," expr',
+       'expr')
     def variables(self, p):
-        return  p[0] + [p[2]] if len(p) == 3 else [p[0]]
+        return p[0] + [p[2]] if len(p) == 3 else [p[0]]
 
-    @_('expr')
-    def variable(self, p):
-        return p[0]
+    # @_('expr')
+    # def variable(self, p):
+    #     return p[0]
 
     @_('mat_fun "(" expr ")"')
     def expr(self, p):

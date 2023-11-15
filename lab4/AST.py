@@ -14,7 +14,7 @@ class InstrOrEmpty(Node):
 
 @dataclass
 class Instructions(Node):
-    instructions: Any
+    instructions: Any = None
 
 
 @dataclass
@@ -122,6 +122,10 @@ class Matrix(Node):
 class MatrixFunc(Node):
     func: Any
     expr: Any
+
+@dataclass
+class Vector(Node):
+    vector: Any
 
 
 @dataclass

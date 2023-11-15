@@ -185,11 +185,16 @@ class TreePrinter:
         self.print_indent(i)
         print("VECTOR")
         for row in self.matrix:
-            self.print_indent(i + 1)
-            print("VECTOR")
-            for expr in row:
-                # self.print_indent(i + 2)
-                expr.printTree(i+2)
+            row.printTree(i + 1)
+
+
+    @addToClass(AST.Vector)
+    def printTree(self, i):
+        self.print_indent(i)
+        print("VECTOR")
+        for expr in self.vector:
+            expr.printTree(i + 1)
+
 
     @addToClass(AST.MatrixFunc)
     def printTree(self, i):
