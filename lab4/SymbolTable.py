@@ -1,3 +1,6 @@
+class Symbol:
+    pass
+
 class VariableSymbol(Symbol):
 
     def __init__(self, name, type):
@@ -27,7 +30,24 @@ class SymbolTable(object):
         else:
             print("Symbol \"" + name + "\" not found, Scope: " + self.name, self.symbols)
     #
+    def get_v_dims(self, name):
+        if name in self.v_dims:
+            return self.v_dims[name]
+        elif self.parent_scope is not None:
+            return self.parent_scope.get_v_dims(name)
+        else:
+            print("Symbol \"" + name + "\" not found, Scope: " + self.name, self.symbols)
 
+
+    def get_v_type(self, name):
+        if name in self.v_type:
+            return self.v_type[name]
+        elif self.parent_scope is not None:
+            return self.parent_scope.get_v_type(name)
+        else:
+            print("Symbol \"" + name + "\" not found, Scope: " + self.name, self.symbols)
+
+    #
     def getParentScope(self):
         return self.parent_scope
     #

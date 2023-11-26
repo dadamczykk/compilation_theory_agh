@@ -7,12 +7,12 @@ Rule 3     instructions_or_empty -> instructions
 Rule 4     instructions -> instruction
 Rule 5     instructions -> instructions instruction
 Rule 6     instruction -> { instructions }
-Rule 7     instruction -> print_i ;
-Rule 8     instruction -> assign ;
-Rule 9     instruction -> while_l
-Rule 10    instruction -> for_l
-Rule 11    instruction -> CONTINUE ;
-Rule 12    instruction -> BREAK ;
+Rule 7     instruction -> BREAK ;
+Rule 8     instruction -> CONTINUE ;
+Rule 9     instruction -> print_i ;
+Rule 10    instruction -> assign ;
+Rule 11    instruction -> while_l
+Rule 12    instruction -> for_l
 Rule 13    instruction -> return_i ;
 Rule 14    instruction -> if_i
 Rule 15    if_i -> IF ( expr ) instruction ELSE error
@@ -37,7 +37,7 @@ Rule 33    print_i -> PRINT printargs
 Rule 34    printargs -> expr
 Rule 35    printargs -> expr , printargs
 Rule 36    expr -> mat_fun ( error )
-Rule 37    expr -> mat_fun ( expr )
+Rule 37    expr -> mat_fun ( mat_fun_args )
 Rule 38    expr -> vector
 Rule 39    expr -> expr DOTMINUS expr  [precedence=left, level=7]
 Rule 40    expr -> expr DOTPLUS expr  [precedence=left, level=7]
@@ -64,7 +64,7 @@ Rule 60    expr -> INTNUM
 Rule 61    expr -> STRING
 Rule 62    var -> ID
 Rule 63    var -> matel
-Rule 64    matel -> ID [ expr , expr ]
+Rule 64    matel -> ID [ mat_fun_args ]
 Rule 65    assign -> var DIVIDEASSIGN error
 Rule 66    assign -> var MULTIPLYASSIGN error
 Rule 67    assign -> var MINUSASSIGN error
@@ -81,9 +81,11 @@ Rule 77    unary -> - expr  [precedence=right, level=11]
 Rule 78    vector -> [ variables ]
 Rule 79    variables -> expr
 Rule 80    variables -> variables , expr
-Rule 81    mat_fun -> ONES
-Rule 82    mat_fun -> EYE
-Rule 83    mat_fun -> ZEROS
+Rule 81    mat_fun_args -> expr
+Rule 82    mat_fun_args -> mat_fun_args , expr
+Rule 83    mat_fun -> ONES
+Rule 84    mat_fun -> EYE
+Rule 85    mat_fun -> ZEROS
 
 Terminals, with rules where they appear:
 
@@ -92,15 +94,15 @@ Terminals, with rules where they appear:
 )                    : 15 16 17 18 19 20 21 22 23 24 36 37 57
 *                    : 53
 +                    : 55
-,                    : 35 64 80
+,                    : 35 80 82
 -                    : 54 77
 /                    : 52
 :                    : 25 26 27 28
-;                    : 7 8 11 12 13
+;                    : 7 8 9 10 13
 =                    : 25 26 27 28 69 74
 AND                  : 44
-BREAK                : 12
-CONTINUE             : 11
+BREAK                : 7
+CONTINUE             : 8
 DIVIDEASSIGN         : 65 70
 DOTDIVIDE            : 41
 DOTMINUS             : 39
@@ -108,7 +110,7 @@ DOTMULTIPLY          : 42
 DOTPLUS              : 40
 ELSE                 : 15 16 18 20
 EQ                   : 51
-EYE                  : 82
+EYE                  : 84
 FLOATNUM             : 59
 FOR                  : 25 26 27 28
 GT                   : 48
@@ -122,7 +124,7 @@ MINUSASSIGN          : 67 72
 MULTIPLYASSIGN       : 66 71
 NEQ                  : 50
 NOT                  : 76
-ONES                 : 81
+ONES                 : 83
 OR                   : 43
 PLUSASSIGN           : 68 73
 PRINT                : 32 33
@@ -130,7 +132,7 @@ RETURN               : 29 30 31
 STRING               : 61
 WHILE                : 22 23 24
 XOR                  : 45
-ZEROS                : 83
+ZEROS                : 85
 [                    : 64 78
 ]                    : 64 78
 error                : 15 16 17 18 19 22 23 25 26 27 29 32 36 65 66 67 68 69
@@ -139,16 +141,17 @@ error                : 15 16 17 18 19 22 23 25 26 27 29 32 36 65 66 67 68 69
 
 Nonterminals, with rules where they appear:
 
-assign               : 8
-expr                 : 15 16 17 20 21 22 24 25 25 26 27 28 28 30 34 35 37 39 39 40 40 41 41 42 42 43 43 44 44 45 45 46 46 47 47 48 48 49 49 50 50 51 51 52 52 53 53 54 54 55 55 57 64 64 70 71 72 73 74 75 76 77 79 80
-for_l                : 10
+assign               : 10
+expr                 : 15 16 17 20 21 22 24 25 25 26 27 28 28 30 34 35 39 39 40 40 41 41 42 42 43 43 44 44 45 45 46 46 47 47 48 48 49 49 50 50 51 51 52 52 53 53 54 54 55 55 57 70 71 72 73 74 75 76 77 79 80 81 82
+for_l                : 12
 if_i                 : 14
 instruction          : 4 5 15 16 18 18 19 20 20 21 23 24 26 27 28
 instructions         : 3 5 6
 instructions_or_empty : 1
 mat_fun              : 36 37
+mat_fun_args         : 37 64 82
 matel                : 63
-print_i              : 7
+print_i              : 9
 printargs            : 33 35
 program              : 0
 return_i             : 13
@@ -156,7 +159,7 @@ unary                : 56
 var                  : 58 65 66 67 68 69 70 71 72 73 74
 variables            : 78 80
 vector               : 38
-while_l              : 9
+while_l              : 11
 
 
 state 0
@@ -168,12 +171,12 @@ state 0
     (4) instructions -> . instruction
     (5) instructions -> . instructions instruction
     (6) instruction -> . { instructions }
-    (7) instruction -> . print_i ;
-    (8) instruction -> . assign ;
-    (9) instruction -> . while_l
-    (10) instruction -> . for_l
-    (11) instruction -> . CONTINUE ;
-    (12) instruction -> . BREAK ;
+    (7) instruction -> . BREAK ;
+    (8) instruction -> . CONTINUE ;
+    (9) instruction -> . print_i ;
+    (10) instruction -> . assign ;
+    (11) instruction -> . while_l
+    (12) instruction -> . for_l
     (13) instruction -> . return_i ;
     (14) instruction -> . if_i
     (32) print_i -> . PRINT error
@@ -207,11 +210,11 @@ state 0
     (21) if_i -> . IF ( expr ) instruction
     (62) var -> . ID
     (63) var -> . matel
-    (64) matel -> . ID [ expr , expr ]
+    (64) matel -> . ID [ mat_fun_args ]
     $end            reduce using rule 2 (instructions_or_empty -> .)
     {               shift and go to state 5
-    CONTINUE        shift and go to state 10
-    BREAK           shift and go to state 11
+    BREAK           shift and go to state 6
+    CONTINUE        shift and go to state 7
     PRINT           shift and go to state 14
     WHILE           shift and go to state 16
     FOR             shift and go to state 17
@@ -223,10 +226,10 @@ state 0
     instructions_or_empty          shift and go to state 2
     instructions                   shift and go to state 3
     instruction                    shift and go to state 4
-    print_i                        shift and go to state 6
-    assign                         shift and go to state 7
-    while_l                        shift and go to state 8
-    for_l                          shift and go to state 9
+    print_i                        shift and go to state 8
+    assign                         shift and go to state 9
+    while_l                        shift and go to state 10
+    for_l                          shift and go to state 11
     return_i                       shift and go to state 12
     if_i                           shift and go to state 13
     var                            shift and go to state 15
@@ -248,12 +251,12 @@ state 3
     (3) instructions_or_empty -> instructions .
     (5) instructions -> instructions . instruction
     (6) instruction -> . { instructions }
-    (7) instruction -> . print_i ;
-    (8) instruction -> . assign ;
-    (9) instruction -> . while_l
-    (10) instruction -> . for_l
-    (11) instruction -> . CONTINUE ;
-    (12) instruction -> . BREAK ;
+    (7) instruction -> . BREAK ;
+    (8) instruction -> . CONTINUE ;
+    (9) instruction -> . print_i ;
+    (10) instruction -> . assign ;
+    (11) instruction -> . while_l
+    (12) instruction -> . for_l
     (13) instruction -> . return_i ;
     (14) instruction -> . if_i
     (32) print_i -> . PRINT error
@@ -287,11 +290,11 @@ state 3
     (21) if_i -> . IF ( expr ) instruction
     (62) var -> . ID
     (63) var -> . matel
-    (64) matel -> . ID [ expr , expr ]
+    (64) matel -> . ID [ mat_fun_args ]
     $end            reduce using rule 3 (instructions_or_empty -> instructions .)
     {               shift and go to state 5
-    CONTINUE        shift and go to state 10
-    BREAK           shift and go to state 11
+    BREAK           shift and go to state 6
+    CONTINUE        shift and go to state 7
     PRINT           shift and go to state 14
     WHILE           shift and go to state 16
     FOR             shift and go to state 17
@@ -300,10 +303,10 @@ state 3
     ID              shift and go to state 18
 
     instruction                    shift and go to state 22
-    print_i                        shift and go to state 6
-    assign                         shift and go to state 7
-    while_l                        shift and go to state 8
-    for_l                          shift and go to state 9
+    print_i                        shift and go to state 8
+    assign                         shift and go to state 9
+    while_l                        shift and go to state 10
+    for_l                          shift and go to state 11
     return_i                       shift and go to state 12
     if_i                           shift and go to state 13
     var                            shift and go to state 15
@@ -313,8 +316,8 @@ state 4
 
     (4) instructions -> instruction .
     {               reduce using rule 4 (instructions -> instruction .)
-    CONTINUE        reduce using rule 4 (instructions -> instruction .)
     BREAK           reduce using rule 4 (instructions -> instruction .)
+    CONTINUE        reduce using rule 4 (instructions -> instruction .)
     PRINT           reduce using rule 4 (instructions -> instruction .)
     WHILE           reduce using rule 4 (instructions -> instruction .)
     FOR             reduce using rule 4 (instructions -> instruction .)
@@ -331,12 +334,12 @@ state 5
     (4) instructions -> . instruction
     (5) instructions -> . instructions instruction
     (6) instruction -> . { instructions }
-    (7) instruction -> . print_i ;
-    (8) instruction -> . assign ;
-    (9) instruction -> . while_l
-    (10) instruction -> . for_l
-    (11) instruction -> . CONTINUE ;
-    (12) instruction -> . BREAK ;
+    (7) instruction -> . BREAK ;
+    (8) instruction -> . CONTINUE ;
+    (9) instruction -> . print_i ;
+    (10) instruction -> . assign ;
+    (11) instruction -> . while_l
+    (12) instruction -> . for_l
     (13) instruction -> . return_i ;
     (14) instruction -> . if_i
     (32) print_i -> . PRINT error
@@ -370,10 +373,10 @@ state 5
     (21) if_i -> . IF ( expr ) instruction
     (62) var -> . ID
     (63) var -> . matel
-    (64) matel -> . ID [ expr , expr ]
+    (64) matel -> . ID [ mat_fun_args ]
     {               shift and go to state 5
-    CONTINUE        shift and go to state 10
-    BREAK           shift and go to state 11
+    BREAK           shift and go to state 6
+    CONTINUE        shift and go to state 7
     PRINT           shift and go to state 14
     WHILE           shift and go to state 16
     FOR             shift and go to state 17
@@ -383,10 +386,10 @@ state 5
 
     instructions                   shift and go to state 23
     instruction                    shift and go to state 4
-    print_i                        shift and go to state 6
-    assign                         shift and go to state 7
-    while_l                        shift and go to state 8
-    for_l                          shift and go to state 9
+    print_i                        shift and go to state 8
+    assign                         shift and go to state 9
+    while_l                        shift and go to state 10
+    for_l                          shift and go to state 11
     return_i                       shift and go to state 12
     if_i                           shift and go to state 13
     var                            shift and go to state 15
@@ -394,60 +397,60 @@ state 5
 
 state 6
 
-    (7) instruction -> print_i . ;
+    (7) instruction -> BREAK . ;
     ;               shift and go to state 24
 
 
 state 7
 
-    (8) instruction -> assign . ;
+    (8) instruction -> CONTINUE . ;
     ;               shift and go to state 25
 
 
 state 8
 
-    (9) instruction -> while_l .
-    {               reduce using rule 9 (instruction -> while_l .)
-    CONTINUE        reduce using rule 9 (instruction -> while_l .)
-    BREAK           reduce using rule 9 (instruction -> while_l .)
-    PRINT           reduce using rule 9 (instruction -> while_l .)
-    WHILE           reduce using rule 9 (instruction -> while_l .)
-    FOR             reduce using rule 9 (instruction -> while_l .)
-    RETURN          reduce using rule 9 (instruction -> while_l .)
-    IF              reduce using rule 9 (instruction -> while_l .)
-    ID              reduce using rule 9 (instruction -> while_l .)
-    $end            reduce using rule 9 (instruction -> while_l .)
-    }               reduce using rule 9 (instruction -> while_l .)
-    ELSE            reduce using rule 9 (instruction -> while_l .)
+    (9) instruction -> print_i . ;
+    ;               shift and go to state 26
 
 
 state 9
 
-    (10) instruction -> for_l .
-    {               reduce using rule 10 (instruction -> for_l .)
-    CONTINUE        reduce using rule 10 (instruction -> for_l .)
-    BREAK           reduce using rule 10 (instruction -> for_l .)
-    PRINT           reduce using rule 10 (instruction -> for_l .)
-    WHILE           reduce using rule 10 (instruction -> for_l .)
-    FOR             reduce using rule 10 (instruction -> for_l .)
-    RETURN          reduce using rule 10 (instruction -> for_l .)
-    IF              reduce using rule 10 (instruction -> for_l .)
-    ID              reduce using rule 10 (instruction -> for_l .)
-    $end            reduce using rule 10 (instruction -> for_l .)
-    }               reduce using rule 10 (instruction -> for_l .)
-    ELSE            reduce using rule 10 (instruction -> for_l .)
+    (10) instruction -> assign . ;
+    ;               shift and go to state 27
 
 
 state 10
 
-    (11) instruction -> CONTINUE . ;
-    ;               shift and go to state 26
+    (11) instruction -> while_l .
+    {               reduce using rule 11 (instruction -> while_l .)
+    BREAK           reduce using rule 11 (instruction -> while_l .)
+    CONTINUE        reduce using rule 11 (instruction -> while_l .)
+    PRINT           reduce using rule 11 (instruction -> while_l .)
+    WHILE           reduce using rule 11 (instruction -> while_l .)
+    FOR             reduce using rule 11 (instruction -> while_l .)
+    RETURN          reduce using rule 11 (instruction -> while_l .)
+    IF              reduce using rule 11 (instruction -> while_l .)
+    ID              reduce using rule 11 (instruction -> while_l .)
+    $end            reduce using rule 11 (instruction -> while_l .)
+    }               reduce using rule 11 (instruction -> while_l .)
+    ELSE            reduce using rule 11 (instruction -> while_l .)
 
 
 state 11
 
-    (12) instruction -> BREAK . ;
-    ;               shift and go to state 27
+    (12) instruction -> for_l .
+    {               reduce using rule 12 (instruction -> for_l .)
+    BREAK           reduce using rule 12 (instruction -> for_l .)
+    CONTINUE        reduce using rule 12 (instruction -> for_l .)
+    PRINT           reduce using rule 12 (instruction -> for_l .)
+    WHILE           reduce using rule 12 (instruction -> for_l .)
+    FOR             reduce using rule 12 (instruction -> for_l .)
+    RETURN          reduce using rule 12 (instruction -> for_l .)
+    IF              reduce using rule 12 (instruction -> for_l .)
+    ID              reduce using rule 12 (instruction -> for_l .)
+    $end            reduce using rule 12 (instruction -> for_l .)
+    }               reduce using rule 12 (instruction -> for_l .)
+    ELSE            reduce using rule 12 (instruction -> for_l .)
 
 
 state 12
@@ -460,8 +463,8 @@ state 13
 
     (14) instruction -> if_i .
     {               reduce using rule 14 (instruction -> if_i .)
-    CONTINUE        reduce using rule 14 (instruction -> if_i .)
     BREAK           reduce using rule 14 (instruction -> if_i .)
+    CONTINUE        reduce using rule 14 (instruction -> if_i .)
     PRINT           reduce using rule 14 (instruction -> if_i .)
     WHILE           reduce using rule 14 (instruction -> if_i .)
     FOR             reduce using rule 14 (instruction -> if_i .)
@@ -480,7 +483,7 @@ state 14
     (34) printargs -> . expr
     (35) printargs -> . expr , printargs
     (36) expr -> . mat_fun ( error )
-    (37) expr -> . mat_fun ( expr )
+    (37) expr -> . mat_fun ( mat_fun_args )
     (38) expr -> . vector
     (39) expr -> . expr DOTMINUS expr
     (40) expr -> . expr DOTPLUS expr
@@ -505,16 +508,16 @@ state 14
     (59) expr -> . FLOATNUM
     (60) expr -> . INTNUM
     (61) expr -> . STRING
-    (81) mat_fun -> . ONES
-    (82) mat_fun -> . EYE
-    (83) mat_fun -> . ZEROS
+    (83) mat_fun -> . ONES
+    (84) mat_fun -> . EYE
+    (85) mat_fun -> . ZEROS
     (78) vector -> . [ variables ]
     (75) unary -> . expr '
     (76) unary -> . NOT expr
     (77) unary -> . - expr
     (62) var -> . ID
     (63) var -> . matel
-    (64) matel -> . ID [ expr , expr ]
+    (64) matel -> . ID [ mat_fun_args ]
     error           shift and go to state 29
     (               shift and go to state 33
     FLOATNUM        shift and go to state 38
@@ -575,7 +578,7 @@ state 17
 state 18
 
     (62) var -> ID .
-    (64) matel -> ID . [ expr , expr ]
+    (64) matel -> ID . [ mat_fun_args ]
     DIVIDEASSIGN    reduce using rule 62 (var -> ID .)
     MULTIPLYASSIGN  reduce using rule 62 (var -> ID .)
     MINUSASSIGN     reduce using rule 62 (var -> ID .)
@@ -606,8 +609,8 @@ state 18
     :               reduce using rule 62 (var -> ID .)
     error           reduce using rule 62 (var -> ID .)
     {               reduce using rule 62 (var -> ID .)
-    CONTINUE        reduce using rule 62 (var -> ID .)
     BREAK           reduce using rule 62 (var -> ID .)
+    CONTINUE        reduce using rule 62 (var -> ID .)
     PRINT           reduce using rule 62 (var -> ID .)
     WHILE           reduce using rule 62 (var -> ID .)
     FOR             reduce using rule 62 (var -> ID .)
@@ -623,7 +626,7 @@ state 19
     (30) return_i -> RETURN . expr
     (31) return_i -> RETURN .
     (36) expr -> . mat_fun ( error )
-    (37) expr -> . mat_fun ( expr )
+    (37) expr -> . mat_fun ( mat_fun_args )
     (38) expr -> . vector
     (39) expr -> . expr DOTMINUS expr
     (40) expr -> . expr DOTPLUS expr
@@ -648,16 +651,16 @@ state 19
     (59) expr -> . FLOATNUM
     (60) expr -> . INTNUM
     (61) expr -> . STRING
-    (81) mat_fun -> . ONES
-    (82) mat_fun -> . EYE
-    (83) mat_fun -> . ZEROS
+    (83) mat_fun -> . ONES
+    (84) mat_fun -> . EYE
+    (85) mat_fun -> . ZEROS
     (78) vector -> . [ variables ]
     (75) unary -> . expr '
     (76) unary -> . NOT expr
     (77) unary -> . - expr
     (62) var -> . ID
     (63) var -> . matel
-    (64) matel -> . ID [ expr , expr ]
+    (64) matel -> . ID [ mat_fun_args ]
     error           shift and go to state 54
     ;               reduce using rule 31 (return_i -> RETURN .)
     (               shift and go to state 33
@@ -724,8 +727,8 @@ state 21
     :               reduce using rule 63 (var -> matel .)
     error           reduce using rule 63 (var -> matel .)
     {               reduce using rule 63 (var -> matel .)
-    CONTINUE        reduce using rule 63 (var -> matel .)
     BREAK           reduce using rule 63 (var -> matel .)
+    CONTINUE        reduce using rule 63 (var -> matel .)
     PRINT           reduce using rule 63 (var -> matel .)
     WHILE           reduce using rule 63 (var -> matel .)
     FOR             reduce using rule 63 (var -> matel .)
@@ -738,8 +741,8 @@ state 22
 
     (5) instructions -> instructions instruction .
     {               reduce using rule 5 (instructions -> instructions instruction .)
-    CONTINUE        reduce using rule 5 (instructions -> instructions instruction .)
     BREAK           reduce using rule 5 (instructions -> instructions instruction .)
+    CONTINUE        reduce using rule 5 (instructions -> instructions instruction .)
     PRINT           reduce using rule 5 (instructions -> instructions instruction .)
     WHILE           reduce using rule 5 (instructions -> instructions instruction .)
     FOR             reduce using rule 5 (instructions -> instructions instruction .)
@@ -755,12 +758,12 @@ state 23
     (6) instruction -> { instructions . }
     (5) instructions -> instructions . instruction
     (6) instruction -> . { instructions }
-    (7) instruction -> . print_i ;
-    (8) instruction -> . assign ;
-    (9) instruction -> . while_l
-    (10) instruction -> . for_l
-    (11) instruction -> . CONTINUE ;
-    (12) instruction -> . BREAK ;
+    (7) instruction -> . BREAK ;
+    (8) instruction -> . CONTINUE ;
+    (9) instruction -> . print_i ;
+    (10) instruction -> . assign ;
+    (11) instruction -> . while_l
+    (12) instruction -> . for_l
     (13) instruction -> . return_i ;
     (14) instruction -> . if_i
     (32) print_i -> . PRINT error
@@ -794,11 +797,11 @@ state 23
     (21) if_i -> . IF ( expr ) instruction
     (62) var -> . ID
     (63) var -> . matel
-    (64) matel -> . ID [ expr , expr ]
+    (64) matel -> . ID [ mat_fun_args ]
     }               shift and go to state 57
     {               shift and go to state 5
-    CONTINUE        shift and go to state 10
-    BREAK           shift and go to state 11
+    BREAK           shift and go to state 6
+    CONTINUE        shift and go to state 7
     PRINT           shift and go to state 14
     WHILE           shift and go to state 16
     FOR             shift and go to state 17
@@ -807,10 +810,10 @@ state 23
     ID              shift and go to state 18
 
     instruction                    shift and go to state 22
-    print_i                        shift and go to state 6
-    assign                         shift and go to state 7
-    while_l                        shift and go to state 8
-    for_l                          shift and go to state 9
+    print_i                        shift and go to state 8
+    assign                         shift and go to state 9
+    while_l                        shift and go to state 10
+    for_l                          shift and go to state 11
     return_i                       shift and go to state 12
     if_i                           shift and go to state 13
     var                            shift and go to state 15
@@ -818,78 +821,78 @@ state 23
 
 state 24
 
-    (7) instruction -> print_i ; .
-    {               reduce using rule 7 (instruction -> print_i ; .)
-    CONTINUE        reduce using rule 7 (instruction -> print_i ; .)
-    BREAK           reduce using rule 7 (instruction -> print_i ; .)
-    PRINT           reduce using rule 7 (instruction -> print_i ; .)
-    WHILE           reduce using rule 7 (instruction -> print_i ; .)
-    FOR             reduce using rule 7 (instruction -> print_i ; .)
-    RETURN          reduce using rule 7 (instruction -> print_i ; .)
-    IF              reduce using rule 7 (instruction -> print_i ; .)
-    ID              reduce using rule 7 (instruction -> print_i ; .)
-    $end            reduce using rule 7 (instruction -> print_i ; .)
-    }               reduce using rule 7 (instruction -> print_i ; .)
-    ELSE            reduce using rule 7 (instruction -> print_i ; .)
+    (7) instruction -> BREAK ; .
+    {               reduce using rule 7 (instruction -> BREAK ; .)
+    BREAK           reduce using rule 7 (instruction -> BREAK ; .)
+    CONTINUE        reduce using rule 7 (instruction -> BREAK ; .)
+    PRINT           reduce using rule 7 (instruction -> BREAK ; .)
+    WHILE           reduce using rule 7 (instruction -> BREAK ; .)
+    FOR             reduce using rule 7 (instruction -> BREAK ; .)
+    RETURN          reduce using rule 7 (instruction -> BREAK ; .)
+    IF              reduce using rule 7 (instruction -> BREAK ; .)
+    ID              reduce using rule 7 (instruction -> BREAK ; .)
+    $end            reduce using rule 7 (instruction -> BREAK ; .)
+    }               reduce using rule 7 (instruction -> BREAK ; .)
+    ELSE            reduce using rule 7 (instruction -> BREAK ; .)
 
 
 state 25
 
-    (8) instruction -> assign ; .
-    {               reduce using rule 8 (instruction -> assign ; .)
-    CONTINUE        reduce using rule 8 (instruction -> assign ; .)
-    BREAK           reduce using rule 8 (instruction -> assign ; .)
-    PRINT           reduce using rule 8 (instruction -> assign ; .)
-    WHILE           reduce using rule 8 (instruction -> assign ; .)
-    FOR             reduce using rule 8 (instruction -> assign ; .)
-    RETURN          reduce using rule 8 (instruction -> assign ; .)
-    IF              reduce using rule 8 (instruction -> assign ; .)
-    ID              reduce using rule 8 (instruction -> assign ; .)
-    $end            reduce using rule 8 (instruction -> assign ; .)
-    }               reduce using rule 8 (instruction -> assign ; .)
-    ELSE            reduce using rule 8 (instruction -> assign ; .)
+    (8) instruction -> CONTINUE ; .
+    {               reduce using rule 8 (instruction -> CONTINUE ; .)
+    BREAK           reduce using rule 8 (instruction -> CONTINUE ; .)
+    CONTINUE        reduce using rule 8 (instruction -> CONTINUE ; .)
+    PRINT           reduce using rule 8 (instruction -> CONTINUE ; .)
+    WHILE           reduce using rule 8 (instruction -> CONTINUE ; .)
+    FOR             reduce using rule 8 (instruction -> CONTINUE ; .)
+    RETURN          reduce using rule 8 (instruction -> CONTINUE ; .)
+    IF              reduce using rule 8 (instruction -> CONTINUE ; .)
+    ID              reduce using rule 8 (instruction -> CONTINUE ; .)
+    $end            reduce using rule 8 (instruction -> CONTINUE ; .)
+    }               reduce using rule 8 (instruction -> CONTINUE ; .)
+    ELSE            reduce using rule 8 (instruction -> CONTINUE ; .)
 
 
 state 26
 
-    (11) instruction -> CONTINUE ; .
-    {               reduce using rule 11 (instruction -> CONTINUE ; .)
-    CONTINUE        reduce using rule 11 (instruction -> CONTINUE ; .)
-    BREAK           reduce using rule 11 (instruction -> CONTINUE ; .)
-    PRINT           reduce using rule 11 (instruction -> CONTINUE ; .)
-    WHILE           reduce using rule 11 (instruction -> CONTINUE ; .)
-    FOR             reduce using rule 11 (instruction -> CONTINUE ; .)
-    RETURN          reduce using rule 11 (instruction -> CONTINUE ; .)
-    IF              reduce using rule 11 (instruction -> CONTINUE ; .)
-    ID              reduce using rule 11 (instruction -> CONTINUE ; .)
-    $end            reduce using rule 11 (instruction -> CONTINUE ; .)
-    }               reduce using rule 11 (instruction -> CONTINUE ; .)
-    ELSE            reduce using rule 11 (instruction -> CONTINUE ; .)
+    (9) instruction -> print_i ; .
+    {               reduce using rule 9 (instruction -> print_i ; .)
+    BREAK           reduce using rule 9 (instruction -> print_i ; .)
+    CONTINUE        reduce using rule 9 (instruction -> print_i ; .)
+    PRINT           reduce using rule 9 (instruction -> print_i ; .)
+    WHILE           reduce using rule 9 (instruction -> print_i ; .)
+    FOR             reduce using rule 9 (instruction -> print_i ; .)
+    RETURN          reduce using rule 9 (instruction -> print_i ; .)
+    IF              reduce using rule 9 (instruction -> print_i ; .)
+    ID              reduce using rule 9 (instruction -> print_i ; .)
+    $end            reduce using rule 9 (instruction -> print_i ; .)
+    }               reduce using rule 9 (instruction -> print_i ; .)
+    ELSE            reduce using rule 9 (instruction -> print_i ; .)
 
 
 state 27
 
-    (12) instruction -> BREAK ; .
-    {               reduce using rule 12 (instruction -> BREAK ; .)
-    CONTINUE        reduce using rule 12 (instruction -> BREAK ; .)
-    BREAK           reduce using rule 12 (instruction -> BREAK ; .)
-    PRINT           reduce using rule 12 (instruction -> BREAK ; .)
-    WHILE           reduce using rule 12 (instruction -> BREAK ; .)
-    FOR             reduce using rule 12 (instruction -> BREAK ; .)
-    RETURN          reduce using rule 12 (instruction -> BREAK ; .)
-    IF              reduce using rule 12 (instruction -> BREAK ; .)
-    ID              reduce using rule 12 (instruction -> BREAK ; .)
-    $end            reduce using rule 12 (instruction -> BREAK ; .)
-    }               reduce using rule 12 (instruction -> BREAK ; .)
-    ELSE            reduce using rule 12 (instruction -> BREAK ; .)
+    (10) instruction -> assign ; .
+    {               reduce using rule 10 (instruction -> assign ; .)
+    BREAK           reduce using rule 10 (instruction -> assign ; .)
+    CONTINUE        reduce using rule 10 (instruction -> assign ; .)
+    PRINT           reduce using rule 10 (instruction -> assign ; .)
+    WHILE           reduce using rule 10 (instruction -> assign ; .)
+    FOR             reduce using rule 10 (instruction -> assign ; .)
+    RETURN          reduce using rule 10 (instruction -> assign ; .)
+    IF              reduce using rule 10 (instruction -> assign ; .)
+    ID              reduce using rule 10 (instruction -> assign ; .)
+    $end            reduce using rule 10 (instruction -> assign ; .)
+    }               reduce using rule 10 (instruction -> assign ; .)
+    ELSE            reduce using rule 10 (instruction -> assign ; .)
 
 
 state 28
 
     (13) instruction -> return_i ; .
     {               reduce using rule 13 (instruction -> return_i ; .)
-    CONTINUE        reduce using rule 13 (instruction -> return_i ; .)
     BREAK           reduce using rule 13 (instruction -> return_i ; .)
+    CONTINUE        reduce using rule 13 (instruction -> return_i ; .)
     PRINT           reduce using rule 13 (instruction -> return_i ; .)
     WHILE           reduce using rule 13 (instruction -> return_i ; .)
     FOR             reduce using rule 13 (instruction -> return_i ; .)
@@ -960,7 +963,7 @@ state 31
 state 32
 
     (36) expr -> mat_fun . ( error )
-    (37) expr -> mat_fun . ( expr )
+    (37) expr -> mat_fun . ( mat_fun_args )
     (               shift and go to state 77
 
 
@@ -968,7 +971,7 @@ state 33
 
     (57) expr -> ( . expr )
     (36) expr -> . mat_fun ( error )
-    (37) expr -> . mat_fun ( expr )
+    (37) expr -> . mat_fun ( mat_fun_args )
     (38) expr -> . vector
     (39) expr -> . expr DOTMINUS expr
     (40) expr -> . expr DOTPLUS expr
@@ -993,16 +996,16 @@ state 33
     (59) expr -> . FLOATNUM
     (60) expr -> . INTNUM
     (61) expr -> . STRING
-    (81) mat_fun -> . ONES
-    (82) mat_fun -> . EYE
-    (83) mat_fun -> . ZEROS
+    (83) mat_fun -> . ONES
+    (84) mat_fun -> . EYE
+    (85) mat_fun -> . ZEROS
     (78) vector -> . [ variables ]
     (75) unary -> . expr '
     (76) unary -> . NOT expr
     (77) unary -> . - expr
     (62) var -> . ID
     (63) var -> . matel
-    (64) matel -> . ID [ expr , expr ]
+    (64) matel -> . ID [ mat_fun_args ]
     (               shift and go to state 33
     FLOATNUM        shift and go to state 38
     INTNUM          shift and go to state 39
@@ -1050,8 +1053,8 @@ state 34
     :               reduce using rule 38 (expr -> vector .)
     error           reduce using rule 38 (expr -> vector .)
     {               reduce using rule 38 (expr -> vector .)
-    CONTINUE        reduce using rule 38 (expr -> vector .)
     BREAK           reduce using rule 38 (expr -> vector .)
+    CONTINUE        reduce using rule 38 (expr -> vector .)
     PRINT           reduce using rule 38 (expr -> vector .)
     WHILE           reduce using rule 38 (expr -> vector .)
     FOR             reduce using rule 38 (expr -> vector .)
@@ -1064,7 +1067,7 @@ state 35
 
     (77) unary -> - . expr
     (36) expr -> . mat_fun ( error )
-    (37) expr -> . mat_fun ( expr )
+    (37) expr -> . mat_fun ( mat_fun_args )
     (38) expr -> . vector
     (39) expr -> . expr DOTMINUS expr
     (40) expr -> . expr DOTPLUS expr
@@ -1089,16 +1092,16 @@ state 35
     (59) expr -> . FLOATNUM
     (60) expr -> . INTNUM
     (61) expr -> . STRING
-    (81) mat_fun -> . ONES
-    (82) mat_fun -> . EYE
-    (83) mat_fun -> . ZEROS
+    (83) mat_fun -> . ONES
+    (84) mat_fun -> . EYE
+    (85) mat_fun -> . ZEROS
     (78) vector -> . [ variables ]
     (75) unary -> . expr '
     (76) unary -> . NOT expr
     (77) unary -> . - expr
     (62) var -> . ID
     (63) var -> . matel
-    (64) matel -> . ID [ expr , expr ]
+    (64) matel -> . ID [ mat_fun_args ]
     (               shift and go to state 33
     FLOATNUM        shift and go to state 38
     INTNUM          shift and go to state 39
@@ -1146,8 +1149,8 @@ state 36
     :               reduce using rule 56 (expr -> unary .)
     error           reduce using rule 56 (expr -> unary .)
     {               reduce using rule 56 (expr -> unary .)
-    CONTINUE        reduce using rule 56 (expr -> unary .)
     BREAK           reduce using rule 56 (expr -> unary .)
+    CONTINUE        reduce using rule 56 (expr -> unary .)
     PRINT           reduce using rule 56 (expr -> unary .)
     WHILE           reduce using rule 56 (expr -> unary .)
     FOR             reduce using rule 56 (expr -> unary .)
@@ -1184,8 +1187,8 @@ state 37
     :               reduce using rule 58 (expr -> var .)
     error           reduce using rule 58 (expr -> var .)
     {               reduce using rule 58 (expr -> var .)
-    CONTINUE        reduce using rule 58 (expr -> var .)
     BREAK           reduce using rule 58 (expr -> var .)
+    CONTINUE        reduce using rule 58 (expr -> var .)
     PRINT           reduce using rule 58 (expr -> var .)
     WHILE           reduce using rule 58 (expr -> var .)
     FOR             reduce using rule 58 (expr -> var .)
@@ -1222,8 +1225,8 @@ state 38
     :               reduce using rule 59 (expr -> FLOATNUM .)
     error           reduce using rule 59 (expr -> FLOATNUM .)
     {               reduce using rule 59 (expr -> FLOATNUM .)
-    CONTINUE        reduce using rule 59 (expr -> FLOATNUM .)
     BREAK           reduce using rule 59 (expr -> FLOATNUM .)
+    CONTINUE        reduce using rule 59 (expr -> FLOATNUM .)
     PRINT           reduce using rule 59 (expr -> FLOATNUM .)
     WHILE           reduce using rule 59 (expr -> FLOATNUM .)
     FOR             reduce using rule 59 (expr -> FLOATNUM .)
@@ -1260,8 +1263,8 @@ state 39
     :               reduce using rule 60 (expr -> INTNUM .)
     error           reduce using rule 60 (expr -> INTNUM .)
     {               reduce using rule 60 (expr -> INTNUM .)
-    CONTINUE        reduce using rule 60 (expr -> INTNUM .)
     BREAK           reduce using rule 60 (expr -> INTNUM .)
+    CONTINUE        reduce using rule 60 (expr -> INTNUM .)
     PRINT           reduce using rule 60 (expr -> INTNUM .)
     WHILE           reduce using rule 60 (expr -> INTNUM .)
     FOR             reduce using rule 60 (expr -> INTNUM .)
@@ -1298,8 +1301,8 @@ state 40
     :               reduce using rule 61 (expr -> STRING .)
     error           reduce using rule 61 (expr -> STRING .)
     {               reduce using rule 61 (expr -> STRING .)
-    CONTINUE        reduce using rule 61 (expr -> STRING .)
     BREAK           reduce using rule 61 (expr -> STRING .)
+    CONTINUE        reduce using rule 61 (expr -> STRING .)
     PRINT           reduce using rule 61 (expr -> STRING .)
     WHILE           reduce using rule 61 (expr -> STRING .)
     FOR             reduce using rule 61 (expr -> STRING .)
@@ -1310,20 +1313,20 @@ state 40
 
 state 41
 
-    (81) mat_fun -> ONES .
-    (               reduce using rule 81 (mat_fun -> ONES .)
+    (83) mat_fun -> ONES .
+    (               reduce using rule 83 (mat_fun -> ONES .)
 
 
 state 42
 
-    (82) mat_fun -> EYE .
-    (               reduce using rule 82 (mat_fun -> EYE .)
+    (84) mat_fun -> EYE .
+    (               reduce using rule 84 (mat_fun -> EYE .)
 
 
 state 43
 
-    (83) mat_fun -> ZEROS .
-    (               reduce using rule 83 (mat_fun -> ZEROS .)
+    (85) mat_fun -> ZEROS .
+    (               reduce using rule 85 (mat_fun -> ZEROS .)
 
 
 state 44
@@ -1332,7 +1335,7 @@ state 44
     (79) variables -> . expr
     (80) variables -> . variables , expr
     (36) expr -> . mat_fun ( error )
-    (37) expr -> . mat_fun ( expr )
+    (37) expr -> . mat_fun ( mat_fun_args )
     (38) expr -> . vector
     (39) expr -> . expr DOTMINUS expr
     (40) expr -> . expr DOTPLUS expr
@@ -1357,16 +1360,16 @@ state 44
     (59) expr -> . FLOATNUM
     (60) expr -> . INTNUM
     (61) expr -> . STRING
-    (81) mat_fun -> . ONES
-    (82) mat_fun -> . EYE
-    (83) mat_fun -> . ZEROS
+    (83) mat_fun -> . ONES
+    (84) mat_fun -> . EYE
+    (85) mat_fun -> . ZEROS
     (78) vector -> . [ variables ]
     (75) unary -> . expr '
     (76) unary -> . NOT expr
     (77) unary -> . - expr
     (62) var -> . ID
     (63) var -> . matel
-    (64) matel -> . ID [ expr , expr ]
+    (64) matel -> . ID [ mat_fun_args ]
     (               shift and go to state 33
     FLOATNUM        shift and go to state 38
     INTNUM          shift and go to state 39
@@ -1391,7 +1394,7 @@ state 45
 
     (76) unary -> NOT . expr
     (36) expr -> . mat_fun ( error )
-    (37) expr -> . mat_fun ( expr )
+    (37) expr -> . mat_fun ( mat_fun_args )
     (38) expr -> . vector
     (39) expr -> . expr DOTMINUS expr
     (40) expr -> . expr DOTPLUS expr
@@ -1416,16 +1419,16 @@ state 45
     (59) expr -> . FLOATNUM
     (60) expr -> . INTNUM
     (61) expr -> . STRING
-    (81) mat_fun -> . ONES
-    (82) mat_fun -> . EYE
-    (83) mat_fun -> . ZEROS
+    (83) mat_fun -> . ONES
+    (84) mat_fun -> . EYE
+    (85) mat_fun -> . ZEROS
     (78) vector -> . [ variables ]
     (75) unary -> . expr '
     (76) unary -> . NOT expr
     (77) unary -> . - expr
     (62) var -> . ID
     (63) var -> . matel
-    (64) matel -> . ID [ expr , expr ]
+    (64) matel -> . ID [ mat_fun_args ]
     (               shift and go to state 33
     FLOATNUM        shift and go to state 38
     INTNUM          shift and go to state 39
@@ -1450,7 +1453,7 @@ state 46
     (65) assign -> var DIVIDEASSIGN . error
     (70) assign -> var DIVIDEASSIGN . expr
     (36) expr -> . mat_fun ( error )
-    (37) expr -> . mat_fun ( expr )
+    (37) expr -> . mat_fun ( mat_fun_args )
     (38) expr -> . vector
     (39) expr -> . expr DOTMINUS expr
     (40) expr -> . expr DOTPLUS expr
@@ -1475,16 +1478,16 @@ state 46
     (59) expr -> . FLOATNUM
     (60) expr -> . INTNUM
     (61) expr -> . STRING
-    (81) mat_fun -> . ONES
-    (82) mat_fun -> . EYE
-    (83) mat_fun -> . ZEROS
+    (83) mat_fun -> . ONES
+    (84) mat_fun -> . EYE
+    (85) mat_fun -> . ZEROS
     (78) vector -> . [ variables ]
     (75) unary -> . expr '
     (76) unary -> . NOT expr
     (77) unary -> . - expr
     (62) var -> . ID
     (63) var -> . matel
-    (64) matel -> . ID [ expr , expr ]
+    (64) matel -> . ID [ mat_fun_args ]
     error           shift and go to state 83
     (               shift and go to state 33
     FLOATNUM        shift and go to state 38
@@ -1510,7 +1513,7 @@ state 47
     (66) assign -> var MULTIPLYASSIGN . error
     (71) assign -> var MULTIPLYASSIGN . expr
     (36) expr -> . mat_fun ( error )
-    (37) expr -> . mat_fun ( expr )
+    (37) expr -> . mat_fun ( mat_fun_args )
     (38) expr -> . vector
     (39) expr -> . expr DOTMINUS expr
     (40) expr -> . expr DOTPLUS expr
@@ -1535,16 +1538,16 @@ state 47
     (59) expr -> . FLOATNUM
     (60) expr -> . INTNUM
     (61) expr -> . STRING
-    (81) mat_fun -> . ONES
-    (82) mat_fun -> . EYE
-    (83) mat_fun -> . ZEROS
+    (83) mat_fun -> . ONES
+    (84) mat_fun -> . EYE
+    (85) mat_fun -> . ZEROS
     (78) vector -> . [ variables ]
     (75) unary -> . expr '
     (76) unary -> . NOT expr
     (77) unary -> . - expr
     (62) var -> . ID
     (63) var -> . matel
-    (64) matel -> . ID [ expr , expr ]
+    (64) matel -> . ID [ mat_fun_args ]
     error           shift and go to state 85
     (               shift and go to state 33
     FLOATNUM        shift and go to state 38
@@ -1570,7 +1573,7 @@ state 48
     (67) assign -> var MINUSASSIGN . error
     (72) assign -> var MINUSASSIGN . expr
     (36) expr -> . mat_fun ( error )
-    (37) expr -> . mat_fun ( expr )
+    (37) expr -> . mat_fun ( mat_fun_args )
     (38) expr -> . vector
     (39) expr -> . expr DOTMINUS expr
     (40) expr -> . expr DOTPLUS expr
@@ -1595,16 +1598,16 @@ state 48
     (59) expr -> . FLOATNUM
     (60) expr -> . INTNUM
     (61) expr -> . STRING
-    (81) mat_fun -> . ONES
-    (82) mat_fun -> . EYE
-    (83) mat_fun -> . ZEROS
+    (83) mat_fun -> . ONES
+    (84) mat_fun -> . EYE
+    (85) mat_fun -> . ZEROS
     (78) vector -> . [ variables ]
     (75) unary -> . expr '
     (76) unary -> . NOT expr
     (77) unary -> . - expr
     (62) var -> . ID
     (63) var -> . matel
-    (64) matel -> . ID [ expr , expr ]
+    (64) matel -> . ID [ mat_fun_args ]
     error           shift and go to state 87
     (               shift and go to state 33
     FLOATNUM        shift and go to state 38
@@ -1630,7 +1633,7 @@ state 49
     (68) assign -> var PLUSASSIGN . error
     (73) assign -> var PLUSASSIGN . expr
     (36) expr -> . mat_fun ( error )
-    (37) expr -> . mat_fun ( expr )
+    (37) expr -> . mat_fun ( mat_fun_args )
     (38) expr -> . vector
     (39) expr -> . expr DOTMINUS expr
     (40) expr -> . expr DOTPLUS expr
@@ -1655,16 +1658,16 @@ state 49
     (59) expr -> . FLOATNUM
     (60) expr -> . INTNUM
     (61) expr -> . STRING
-    (81) mat_fun -> . ONES
-    (82) mat_fun -> . EYE
-    (83) mat_fun -> . ZEROS
+    (83) mat_fun -> . ONES
+    (84) mat_fun -> . EYE
+    (85) mat_fun -> . ZEROS
     (78) vector -> . [ variables ]
     (75) unary -> . expr '
     (76) unary -> . NOT expr
     (77) unary -> . - expr
     (62) var -> . ID
     (63) var -> . matel
-    (64) matel -> . ID [ expr , expr ]
+    (64) matel -> . ID [ mat_fun_args ]
     error           shift and go to state 89
     (               shift and go to state 33
     FLOATNUM        shift and go to state 38
@@ -1690,7 +1693,7 @@ state 50
     (69) assign -> var = . error
     (74) assign -> var = . expr
     (36) expr -> . mat_fun ( error )
-    (37) expr -> . mat_fun ( expr )
+    (37) expr -> . mat_fun ( mat_fun_args )
     (38) expr -> . vector
     (39) expr -> . expr DOTMINUS expr
     (40) expr -> . expr DOTPLUS expr
@@ -1715,16 +1718,16 @@ state 50
     (59) expr -> . FLOATNUM
     (60) expr -> . INTNUM
     (61) expr -> . STRING
-    (81) mat_fun -> . ONES
-    (82) mat_fun -> . EYE
-    (83) mat_fun -> . ZEROS
+    (83) mat_fun -> . ONES
+    (84) mat_fun -> . EYE
+    (85) mat_fun -> . ZEROS
     (78) vector -> . [ variables ]
     (75) unary -> . expr '
     (76) unary -> . NOT expr
     (77) unary -> . - expr
     (62) var -> . ID
     (63) var -> . matel
-    (64) matel -> . ID [ expr , expr ]
+    (64) matel -> . ID [ mat_fun_args ]
     error           shift and go to state 91
     (               shift and go to state 33
     FLOATNUM        shift and go to state 38
@@ -1751,7 +1754,7 @@ state 51
     (23) while_l -> WHILE ( . error ) instruction
     (24) while_l -> WHILE ( . expr ) instruction
     (36) expr -> . mat_fun ( error )
-    (37) expr -> . mat_fun ( expr )
+    (37) expr -> . mat_fun ( mat_fun_args )
     (38) expr -> . vector
     (39) expr -> . expr DOTMINUS expr
     (40) expr -> . expr DOTPLUS expr
@@ -1776,16 +1779,16 @@ state 51
     (59) expr -> . FLOATNUM
     (60) expr -> . INTNUM
     (61) expr -> . STRING
-    (81) mat_fun -> . ONES
-    (82) mat_fun -> . EYE
-    (83) mat_fun -> . ZEROS
+    (83) mat_fun -> . ONES
+    (84) mat_fun -> . EYE
+    (85) mat_fun -> . ZEROS
     (78) vector -> . [ variables ]
     (75) unary -> . expr '
     (76) unary -> . NOT expr
     (77) unary -> . - expr
     (62) var -> . ID
     (63) var -> . matel
-    (64) matel -> . ID [ expr , expr ]
+    (64) matel -> . ID [ mat_fun_args ]
     error           shift and go to state 94
     (               shift and go to state 33
     FLOATNUM        shift and go to state 38
@@ -1817,9 +1820,11 @@ state 52
 
 state 53
 
-    (64) matel -> ID [ . expr , expr ]
+    (64) matel -> ID [ . mat_fun_args ]
+    (81) mat_fun_args -> . expr
+    (82) mat_fun_args -> . mat_fun_args , expr
     (36) expr -> . mat_fun ( error )
-    (37) expr -> . mat_fun ( expr )
+    (37) expr -> . mat_fun ( mat_fun_args )
     (38) expr -> . vector
     (39) expr -> . expr DOTMINUS expr
     (40) expr -> . expr DOTPLUS expr
@@ -1844,16 +1849,16 @@ state 53
     (59) expr -> . FLOATNUM
     (60) expr -> . INTNUM
     (61) expr -> . STRING
-    (81) mat_fun -> . ONES
-    (82) mat_fun -> . EYE
-    (83) mat_fun -> . ZEROS
+    (83) mat_fun -> . ONES
+    (84) mat_fun -> . EYE
+    (85) mat_fun -> . ZEROS
     (78) vector -> . [ variables ]
     (75) unary -> . expr '
     (76) unary -> . NOT expr
     (77) unary -> . - expr
     (62) var -> . ID
     (63) var -> . matel
-    (64) matel -> . ID [ expr , expr ]
+    (64) matel -> . ID [ mat_fun_args ]
     (               shift and go to state 33
     FLOATNUM        shift and go to state 38
     INTNUM          shift and go to state 39
@@ -1866,7 +1871,8 @@ state 53
     -               shift and go to state 35
     ID              shift and go to state 18
 
-    expr                           shift and go to state 96
+    mat_fun_args                   shift and go to state 96
+    expr                           shift and go to state 97
     mat_fun                        shift and go to state 32
     vector                         shift and go to state 34
     unary                          shift and go to state 36
@@ -1931,7 +1937,7 @@ state 56
     (20) if_i -> IF ( . expr ) instruction ELSE instruction
     (21) if_i -> IF ( . expr ) instruction
     (36) expr -> . mat_fun ( error )
-    (37) expr -> . mat_fun ( expr )
+    (37) expr -> . mat_fun ( mat_fun_args )
     (38) expr -> . vector
     (39) expr -> . expr DOTMINUS expr
     (40) expr -> . expr DOTPLUS expr
@@ -1956,17 +1962,17 @@ state 56
     (59) expr -> . FLOATNUM
     (60) expr -> . INTNUM
     (61) expr -> . STRING
-    (81) mat_fun -> . ONES
-    (82) mat_fun -> . EYE
-    (83) mat_fun -> . ZEROS
+    (83) mat_fun -> . ONES
+    (84) mat_fun -> . EYE
+    (85) mat_fun -> . ZEROS
     (78) vector -> . [ variables ]
     (75) unary -> . expr '
     (76) unary -> . NOT expr
     (77) unary -> . - expr
     (62) var -> . ID
     (63) var -> . matel
-    (64) matel -> . ID [ expr , expr ]
-    error           shift and go to state 98
+    (64) matel -> . ID [ mat_fun_args ]
+    error           shift and go to state 99
     (               shift and go to state 33
     FLOATNUM        shift and go to state 38
     INTNUM          shift and go to state 39
@@ -1979,7 +1985,7 @@ state 56
     -               shift and go to state 35
     ID              shift and go to state 18
 
-    expr                           shift and go to state 97
+    expr                           shift and go to state 98
     mat_fun                        shift and go to state 32
     vector                         shift and go to state 34
     unary                          shift and go to state 36
@@ -1990,8 +1996,8 @@ state 57
 
     (6) instruction -> { instructions } .
     {               reduce using rule 6 (instruction -> { instructions } .)
-    CONTINUE        reduce using rule 6 (instruction -> { instructions } .)
     BREAK           reduce using rule 6 (instruction -> { instructions } .)
+    CONTINUE        reduce using rule 6 (instruction -> { instructions } .)
     PRINT           reduce using rule 6 (instruction -> { instructions } .)
     WHILE           reduce using rule 6 (instruction -> { instructions } .)
     FOR             reduce using rule 6 (instruction -> { instructions } .)
@@ -2009,7 +2015,7 @@ state 58
     (34) printargs -> . expr
     (35) printargs -> . expr , printargs
     (36) expr -> . mat_fun ( error )
-    (37) expr -> . mat_fun ( expr )
+    (37) expr -> . mat_fun ( mat_fun_args )
     (38) expr -> . vector
     (39) expr -> . expr DOTMINUS expr
     (40) expr -> . expr DOTPLUS expr
@@ -2034,16 +2040,16 @@ state 58
     (59) expr -> . FLOATNUM
     (60) expr -> . INTNUM
     (61) expr -> . STRING
-    (81) mat_fun -> . ONES
-    (82) mat_fun -> . EYE
-    (83) mat_fun -> . ZEROS
+    (83) mat_fun -> . ONES
+    (84) mat_fun -> . EYE
+    (85) mat_fun -> . ZEROS
     (78) vector -> . [ variables ]
     (75) unary -> . expr '
     (76) unary -> . NOT expr
     (77) unary -> . - expr
     (62) var -> . ID
     (63) var -> . matel
-    (64) matel -> . ID [ expr , expr ]
+    (64) matel -> . ID [ mat_fun_args ]
     (               shift and go to state 33
     FLOATNUM        shift and go to state 38
     INTNUM          shift and go to state 39
@@ -2057,7 +2063,7 @@ state 58
     ID              shift and go to state 18
 
     expr                           shift and go to state 31
-    printargs                      shift and go to state 99
+    printargs                      shift and go to state 100
     mat_fun                        shift and go to state 32
     vector                         shift and go to state 34
     unary                          shift and go to state 36
@@ -2068,7 +2074,7 @@ state 59
 
     (39) expr -> expr DOTMINUS . expr
     (36) expr -> . mat_fun ( error )
-    (37) expr -> . mat_fun ( expr )
+    (37) expr -> . mat_fun ( mat_fun_args )
     (38) expr -> . vector
     (39) expr -> . expr DOTMINUS expr
     (40) expr -> . expr DOTPLUS expr
@@ -2093,74 +2099,16 @@ state 59
     (59) expr -> . FLOATNUM
     (60) expr -> . INTNUM
     (61) expr -> . STRING
-    (81) mat_fun -> . ONES
-    (82) mat_fun -> . EYE
-    (83) mat_fun -> . ZEROS
+    (83) mat_fun -> . ONES
+    (84) mat_fun -> . EYE
+    (85) mat_fun -> . ZEROS
     (78) vector -> . [ variables ]
     (75) unary -> . expr '
     (76) unary -> . NOT expr
     (77) unary -> . - expr
     (62) var -> . ID
     (63) var -> . matel
-    (64) matel -> . ID [ expr , expr ]
-    (               shift and go to state 33
-    FLOATNUM        shift and go to state 38
-    INTNUM          shift and go to state 39
-    STRING          shift and go to state 40
-    ONES            shift and go to state 41
-    EYE             shift and go to state 42
-    ZEROS           shift and go to state 43
-    [               shift and go to state 44
-    NOT             shift and go to state 45
-    -               shift and go to state 35
-    ID              shift and go to state 18
-
-    expr                           shift and go to state 100
-    mat_fun                        shift and go to state 32
-    vector                         shift and go to state 34
-    unary                          shift and go to state 36
-    var                            shift and go to state 37
-    matel                          shift and go to state 21
-
-state 60
-
-    (40) expr -> expr DOTPLUS . expr
-    (36) expr -> . mat_fun ( error )
-    (37) expr -> . mat_fun ( expr )
-    (38) expr -> . vector
-    (39) expr -> . expr DOTMINUS expr
-    (40) expr -> . expr DOTPLUS expr
-    (41) expr -> . expr DOTDIVIDE expr
-    (42) expr -> . expr DOTMULTIPLY expr
-    (43) expr -> . expr OR expr
-    (44) expr -> . expr AND expr
-    (45) expr -> . expr XOR expr
-    (46) expr -> . expr GTE expr
-    (47) expr -> . expr LTE expr
-    (48) expr -> . expr GT expr
-    (49) expr -> . expr LT expr
-    (50) expr -> . expr NEQ expr
-    (51) expr -> . expr EQ expr
-    (52) expr -> . expr / expr
-    (53) expr -> . expr * expr
-    (54) expr -> . expr - expr
-    (55) expr -> . expr + expr
-    (56) expr -> . unary
-    (57) expr -> . ( expr )
-    (58) expr -> . var
-    (59) expr -> . FLOATNUM
-    (60) expr -> . INTNUM
-    (61) expr -> . STRING
-    (81) mat_fun -> . ONES
-    (82) mat_fun -> . EYE
-    (83) mat_fun -> . ZEROS
-    (78) vector -> . [ variables ]
-    (75) unary -> . expr '
-    (76) unary -> . NOT expr
-    (77) unary -> . - expr
-    (62) var -> . ID
-    (63) var -> . matel
-    (64) matel -> . ID [ expr , expr ]
+    (64) matel -> . ID [ mat_fun_args ]
     (               shift and go to state 33
     FLOATNUM        shift and go to state 38
     INTNUM          shift and go to state 39
@@ -2180,11 +2128,11 @@ state 60
     var                            shift and go to state 37
     matel                          shift and go to state 21
 
-state 61
+state 60
 
-    (41) expr -> expr DOTDIVIDE . expr
+    (40) expr -> expr DOTPLUS . expr
     (36) expr -> . mat_fun ( error )
-    (37) expr -> . mat_fun ( expr )
+    (37) expr -> . mat_fun ( mat_fun_args )
     (38) expr -> . vector
     (39) expr -> . expr DOTMINUS expr
     (40) expr -> . expr DOTPLUS expr
@@ -2209,16 +2157,16 @@ state 61
     (59) expr -> . FLOATNUM
     (60) expr -> . INTNUM
     (61) expr -> . STRING
-    (81) mat_fun -> . ONES
-    (82) mat_fun -> . EYE
-    (83) mat_fun -> . ZEROS
+    (83) mat_fun -> . ONES
+    (84) mat_fun -> . EYE
+    (85) mat_fun -> . ZEROS
     (78) vector -> . [ variables ]
     (75) unary -> . expr '
     (76) unary -> . NOT expr
     (77) unary -> . - expr
     (62) var -> . ID
     (63) var -> . matel
-    (64) matel -> . ID [ expr , expr ]
+    (64) matel -> . ID [ mat_fun_args ]
     (               shift and go to state 33
     FLOATNUM        shift and go to state 38
     INTNUM          shift and go to state 39
@@ -2238,11 +2186,11 @@ state 61
     var                            shift and go to state 37
     matel                          shift and go to state 21
 
-state 62
+state 61
 
-    (42) expr -> expr DOTMULTIPLY . expr
+    (41) expr -> expr DOTDIVIDE . expr
     (36) expr -> . mat_fun ( error )
-    (37) expr -> . mat_fun ( expr )
+    (37) expr -> . mat_fun ( mat_fun_args )
     (38) expr -> . vector
     (39) expr -> . expr DOTMINUS expr
     (40) expr -> . expr DOTPLUS expr
@@ -2267,16 +2215,16 @@ state 62
     (59) expr -> . FLOATNUM
     (60) expr -> . INTNUM
     (61) expr -> . STRING
-    (81) mat_fun -> . ONES
-    (82) mat_fun -> . EYE
-    (83) mat_fun -> . ZEROS
+    (83) mat_fun -> . ONES
+    (84) mat_fun -> . EYE
+    (85) mat_fun -> . ZEROS
     (78) vector -> . [ variables ]
     (75) unary -> . expr '
     (76) unary -> . NOT expr
     (77) unary -> . - expr
     (62) var -> . ID
     (63) var -> . matel
-    (64) matel -> . ID [ expr , expr ]
+    (64) matel -> . ID [ mat_fun_args ]
     (               shift and go to state 33
     FLOATNUM        shift and go to state 38
     INTNUM          shift and go to state 39
@@ -2296,11 +2244,11 @@ state 62
     var                            shift and go to state 37
     matel                          shift and go to state 21
 
-state 63
+state 62
 
-    (43) expr -> expr OR . expr
+    (42) expr -> expr DOTMULTIPLY . expr
     (36) expr -> . mat_fun ( error )
-    (37) expr -> . mat_fun ( expr )
+    (37) expr -> . mat_fun ( mat_fun_args )
     (38) expr -> . vector
     (39) expr -> . expr DOTMINUS expr
     (40) expr -> . expr DOTPLUS expr
@@ -2325,16 +2273,16 @@ state 63
     (59) expr -> . FLOATNUM
     (60) expr -> . INTNUM
     (61) expr -> . STRING
-    (81) mat_fun -> . ONES
-    (82) mat_fun -> . EYE
-    (83) mat_fun -> . ZEROS
+    (83) mat_fun -> . ONES
+    (84) mat_fun -> . EYE
+    (85) mat_fun -> . ZEROS
     (78) vector -> . [ variables ]
     (75) unary -> . expr '
     (76) unary -> . NOT expr
     (77) unary -> . - expr
     (62) var -> . ID
     (63) var -> . matel
-    (64) matel -> . ID [ expr , expr ]
+    (64) matel -> . ID [ mat_fun_args ]
     (               shift and go to state 33
     FLOATNUM        shift and go to state 38
     INTNUM          shift and go to state 39
@@ -2354,11 +2302,11 @@ state 63
     var                            shift and go to state 37
     matel                          shift and go to state 21
 
-state 64
+state 63
 
-    (44) expr -> expr AND . expr
+    (43) expr -> expr OR . expr
     (36) expr -> . mat_fun ( error )
-    (37) expr -> . mat_fun ( expr )
+    (37) expr -> . mat_fun ( mat_fun_args )
     (38) expr -> . vector
     (39) expr -> . expr DOTMINUS expr
     (40) expr -> . expr DOTPLUS expr
@@ -2383,16 +2331,16 @@ state 64
     (59) expr -> . FLOATNUM
     (60) expr -> . INTNUM
     (61) expr -> . STRING
-    (81) mat_fun -> . ONES
-    (82) mat_fun -> . EYE
-    (83) mat_fun -> . ZEROS
+    (83) mat_fun -> . ONES
+    (84) mat_fun -> . EYE
+    (85) mat_fun -> . ZEROS
     (78) vector -> . [ variables ]
     (75) unary -> . expr '
     (76) unary -> . NOT expr
     (77) unary -> . - expr
     (62) var -> . ID
     (63) var -> . matel
-    (64) matel -> . ID [ expr , expr ]
+    (64) matel -> . ID [ mat_fun_args ]
     (               shift and go to state 33
     FLOATNUM        shift and go to state 38
     INTNUM          shift and go to state 39
@@ -2412,11 +2360,11 @@ state 64
     var                            shift and go to state 37
     matel                          shift and go to state 21
 
-state 65
+state 64
 
-    (45) expr -> expr XOR . expr
+    (44) expr -> expr AND . expr
     (36) expr -> . mat_fun ( error )
-    (37) expr -> . mat_fun ( expr )
+    (37) expr -> . mat_fun ( mat_fun_args )
     (38) expr -> . vector
     (39) expr -> . expr DOTMINUS expr
     (40) expr -> . expr DOTPLUS expr
@@ -2441,16 +2389,16 @@ state 65
     (59) expr -> . FLOATNUM
     (60) expr -> . INTNUM
     (61) expr -> . STRING
-    (81) mat_fun -> . ONES
-    (82) mat_fun -> . EYE
-    (83) mat_fun -> . ZEROS
+    (83) mat_fun -> . ONES
+    (84) mat_fun -> . EYE
+    (85) mat_fun -> . ZEROS
     (78) vector -> . [ variables ]
     (75) unary -> . expr '
     (76) unary -> . NOT expr
     (77) unary -> . - expr
     (62) var -> . ID
     (63) var -> . matel
-    (64) matel -> . ID [ expr , expr ]
+    (64) matel -> . ID [ mat_fun_args ]
     (               shift and go to state 33
     FLOATNUM        shift and go to state 38
     INTNUM          shift and go to state 39
@@ -2470,11 +2418,11 @@ state 65
     var                            shift and go to state 37
     matel                          shift and go to state 21
 
-state 66
+state 65
 
-    (46) expr -> expr GTE . expr
+    (45) expr -> expr XOR . expr
     (36) expr -> . mat_fun ( error )
-    (37) expr -> . mat_fun ( expr )
+    (37) expr -> . mat_fun ( mat_fun_args )
     (38) expr -> . vector
     (39) expr -> . expr DOTMINUS expr
     (40) expr -> . expr DOTPLUS expr
@@ -2499,16 +2447,16 @@ state 66
     (59) expr -> . FLOATNUM
     (60) expr -> . INTNUM
     (61) expr -> . STRING
-    (81) mat_fun -> . ONES
-    (82) mat_fun -> . EYE
-    (83) mat_fun -> . ZEROS
+    (83) mat_fun -> . ONES
+    (84) mat_fun -> . EYE
+    (85) mat_fun -> . ZEROS
     (78) vector -> . [ variables ]
     (75) unary -> . expr '
     (76) unary -> . NOT expr
     (77) unary -> . - expr
     (62) var -> . ID
     (63) var -> . matel
-    (64) matel -> . ID [ expr , expr ]
+    (64) matel -> . ID [ mat_fun_args ]
     (               shift and go to state 33
     FLOATNUM        shift and go to state 38
     INTNUM          shift and go to state 39
@@ -2528,11 +2476,11 @@ state 66
     var                            shift and go to state 37
     matel                          shift and go to state 21
 
-state 67
+state 66
 
-    (47) expr -> expr LTE . expr
+    (46) expr -> expr GTE . expr
     (36) expr -> . mat_fun ( error )
-    (37) expr -> . mat_fun ( expr )
+    (37) expr -> . mat_fun ( mat_fun_args )
     (38) expr -> . vector
     (39) expr -> . expr DOTMINUS expr
     (40) expr -> . expr DOTPLUS expr
@@ -2557,16 +2505,16 @@ state 67
     (59) expr -> . FLOATNUM
     (60) expr -> . INTNUM
     (61) expr -> . STRING
-    (81) mat_fun -> . ONES
-    (82) mat_fun -> . EYE
-    (83) mat_fun -> . ZEROS
+    (83) mat_fun -> . ONES
+    (84) mat_fun -> . EYE
+    (85) mat_fun -> . ZEROS
     (78) vector -> . [ variables ]
     (75) unary -> . expr '
     (76) unary -> . NOT expr
     (77) unary -> . - expr
     (62) var -> . ID
     (63) var -> . matel
-    (64) matel -> . ID [ expr , expr ]
+    (64) matel -> . ID [ mat_fun_args ]
     (               shift and go to state 33
     FLOATNUM        shift and go to state 38
     INTNUM          shift and go to state 39
@@ -2586,11 +2534,11 @@ state 67
     var                            shift and go to state 37
     matel                          shift and go to state 21
 
-state 68
+state 67
 
-    (48) expr -> expr GT . expr
+    (47) expr -> expr LTE . expr
     (36) expr -> . mat_fun ( error )
-    (37) expr -> . mat_fun ( expr )
+    (37) expr -> . mat_fun ( mat_fun_args )
     (38) expr -> . vector
     (39) expr -> . expr DOTMINUS expr
     (40) expr -> . expr DOTPLUS expr
@@ -2615,16 +2563,16 @@ state 68
     (59) expr -> . FLOATNUM
     (60) expr -> . INTNUM
     (61) expr -> . STRING
-    (81) mat_fun -> . ONES
-    (82) mat_fun -> . EYE
-    (83) mat_fun -> . ZEROS
+    (83) mat_fun -> . ONES
+    (84) mat_fun -> . EYE
+    (85) mat_fun -> . ZEROS
     (78) vector -> . [ variables ]
     (75) unary -> . expr '
     (76) unary -> . NOT expr
     (77) unary -> . - expr
     (62) var -> . ID
     (63) var -> . matel
-    (64) matel -> . ID [ expr , expr ]
+    (64) matel -> . ID [ mat_fun_args ]
     (               shift and go to state 33
     FLOATNUM        shift and go to state 38
     INTNUM          shift and go to state 39
@@ -2644,11 +2592,11 @@ state 68
     var                            shift and go to state 37
     matel                          shift and go to state 21
 
-state 69
+state 68
 
-    (49) expr -> expr LT . expr
+    (48) expr -> expr GT . expr
     (36) expr -> . mat_fun ( error )
-    (37) expr -> . mat_fun ( expr )
+    (37) expr -> . mat_fun ( mat_fun_args )
     (38) expr -> . vector
     (39) expr -> . expr DOTMINUS expr
     (40) expr -> . expr DOTPLUS expr
@@ -2673,16 +2621,16 @@ state 69
     (59) expr -> . FLOATNUM
     (60) expr -> . INTNUM
     (61) expr -> . STRING
-    (81) mat_fun -> . ONES
-    (82) mat_fun -> . EYE
-    (83) mat_fun -> . ZEROS
+    (83) mat_fun -> . ONES
+    (84) mat_fun -> . EYE
+    (85) mat_fun -> . ZEROS
     (78) vector -> . [ variables ]
     (75) unary -> . expr '
     (76) unary -> . NOT expr
     (77) unary -> . - expr
     (62) var -> . ID
     (63) var -> . matel
-    (64) matel -> . ID [ expr , expr ]
+    (64) matel -> . ID [ mat_fun_args ]
     (               shift and go to state 33
     FLOATNUM        shift and go to state 38
     INTNUM          shift and go to state 39
@@ -2702,11 +2650,11 @@ state 69
     var                            shift and go to state 37
     matel                          shift and go to state 21
 
-state 70
+state 69
 
-    (50) expr -> expr NEQ . expr
+    (49) expr -> expr LT . expr
     (36) expr -> . mat_fun ( error )
-    (37) expr -> . mat_fun ( expr )
+    (37) expr -> . mat_fun ( mat_fun_args )
     (38) expr -> . vector
     (39) expr -> . expr DOTMINUS expr
     (40) expr -> . expr DOTPLUS expr
@@ -2731,16 +2679,16 @@ state 70
     (59) expr -> . FLOATNUM
     (60) expr -> . INTNUM
     (61) expr -> . STRING
-    (81) mat_fun -> . ONES
-    (82) mat_fun -> . EYE
-    (83) mat_fun -> . ZEROS
+    (83) mat_fun -> . ONES
+    (84) mat_fun -> . EYE
+    (85) mat_fun -> . ZEROS
     (78) vector -> . [ variables ]
     (75) unary -> . expr '
     (76) unary -> . NOT expr
     (77) unary -> . - expr
     (62) var -> . ID
     (63) var -> . matel
-    (64) matel -> . ID [ expr , expr ]
+    (64) matel -> . ID [ mat_fun_args ]
     (               shift and go to state 33
     FLOATNUM        shift and go to state 38
     INTNUM          shift and go to state 39
@@ -2760,11 +2708,11 @@ state 70
     var                            shift and go to state 37
     matel                          shift and go to state 21
 
-state 71
+state 70
 
-    (51) expr -> expr EQ . expr
+    (50) expr -> expr NEQ . expr
     (36) expr -> . mat_fun ( error )
-    (37) expr -> . mat_fun ( expr )
+    (37) expr -> . mat_fun ( mat_fun_args )
     (38) expr -> . vector
     (39) expr -> . expr DOTMINUS expr
     (40) expr -> . expr DOTPLUS expr
@@ -2789,16 +2737,16 @@ state 71
     (59) expr -> . FLOATNUM
     (60) expr -> . INTNUM
     (61) expr -> . STRING
-    (81) mat_fun -> . ONES
-    (82) mat_fun -> . EYE
-    (83) mat_fun -> . ZEROS
+    (83) mat_fun -> . ONES
+    (84) mat_fun -> . EYE
+    (85) mat_fun -> . ZEROS
     (78) vector -> . [ variables ]
     (75) unary -> . expr '
     (76) unary -> . NOT expr
     (77) unary -> . - expr
     (62) var -> . ID
     (63) var -> . matel
-    (64) matel -> . ID [ expr , expr ]
+    (64) matel -> . ID [ mat_fun_args ]
     (               shift and go to state 33
     FLOATNUM        shift and go to state 38
     INTNUM          shift and go to state 39
@@ -2818,11 +2766,11 @@ state 71
     var                            shift and go to state 37
     matel                          shift and go to state 21
 
-state 72
+state 71
 
-    (52) expr -> expr / . expr
+    (51) expr -> expr EQ . expr
     (36) expr -> . mat_fun ( error )
-    (37) expr -> . mat_fun ( expr )
+    (37) expr -> . mat_fun ( mat_fun_args )
     (38) expr -> . vector
     (39) expr -> . expr DOTMINUS expr
     (40) expr -> . expr DOTPLUS expr
@@ -2847,16 +2795,16 @@ state 72
     (59) expr -> . FLOATNUM
     (60) expr -> . INTNUM
     (61) expr -> . STRING
-    (81) mat_fun -> . ONES
-    (82) mat_fun -> . EYE
-    (83) mat_fun -> . ZEROS
+    (83) mat_fun -> . ONES
+    (84) mat_fun -> . EYE
+    (85) mat_fun -> . ZEROS
     (78) vector -> . [ variables ]
     (75) unary -> . expr '
     (76) unary -> . NOT expr
     (77) unary -> . - expr
     (62) var -> . ID
     (63) var -> . matel
-    (64) matel -> . ID [ expr , expr ]
+    (64) matel -> . ID [ mat_fun_args ]
     (               shift and go to state 33
     FLOATNUM        shift and go to state 38
     INTNUM          shift and go to state 39
@@ -2876,11 +2824,11 @@ state 72
     var                            shift and go to state 37
     matel                          shift and go to state 21
 
-state 73
+state 72
 
-    (53) expr -> expr * . expr
+    (52) expr -> expr / . expr
     (36) expr -> . mat_fun ( error )
-    (37) expr -> . mat_fun ( expr )
+    (37) expr -> . mat_fun ( mat_fun_args )
     (38) expr -> . vector
     (39) expr -> . expr DOTMINUS expr
     (40) expr -> . expr DOTPLUS expr
@@ -2905,16 +2853,16 @@ state 73
     (59) expr -> . FLOATNUM
     (60) expr -> . INTNUM
     (61) expr -> . STRING
-    (81) mat_fun -> . ONES
-    (82) mat_fun -> . EYE
-    (83) mat_fun -> . ZEROS
+    (83) mat_fun -> . ONES
+    (84) mat_fun -> . EYE
+    (85) mat_fun -> . ZEROS
     (78) vector -> . [ variables ]
     (75) unary -> . expr '
     (76) unary -> . NOT expr
     (77) unary -> . - expr
     (62) var -> . ID
     (63) var -> . matel
-    (64) matel -> . ID [ expr , expr ]
+    (64) matel -> . ID [ mat_fun_args ]
     (               shift and go to state 33
     FLOATNUM        shift and go to state 38
     INTNUM          shift and go to state 39
@@ -2934,11 +2882,11 @@ state 73
     var                            shift and go to state 37
     matel                          shift and go to state 21
 
-state 74
+state 73
 
-    (54) expr -> expr - . expr
+    (53) expr -> expr * . expr
     (36) expr -> . mat_fun ( error )
-    (37) expr -> . mat_fun ( expr )
+    (37) expr -> . mat_fun ( mat_fun_args )
     (38) expr -> . vector
     (39) expr -> . expr DOTMINUS expr
     (40) expr -> . expr DOTPLUS expr
@@ -2963,16 +2911,16 @@ state 74
     (59) expr -> . FLOATNUM
     (60) expr -> . INTNUM
     (61) expr -> . STRING
-    (81) mat_fun -> . ONES
-    (82) mat_fun -> . EYE
-    (83) mat_fun -> . ZEROS
+    (83) mat_fun -> . ONES
+    (84) mat_fun -> . EYE
+    (85) mat_fun -> . ZEROS
     (78) vector -> . [ variables ]
     (75) unary -> . expr '
     (76) unary -> . NOT expr
     (77) unary -> . - expr
     (62) var -> . ID
     (63) var -> . matel
-    (64) matel -> . ID [ expr , expr ]
+    (64) matel -> . ID [ mat_fun_args ]
     (               shift and go to state 33
     FLOATNUM        shift and go to state 38
     INTNUM          shift and go to state 39
@@ -2992,11 +2940,11 @@ state 74
     var                            shift and go to state 37
     matel                          shift and go to state 21
 
-state 75
+state 74
 
-    (55) expr -> expr + . expr
+    (54) expr -> expr - . expr
     (36) expr -> . mat_fun ( error )
-    (37) expr -> . mat_fun ( expr )
+    (37) expr -> . mat_fun ( mat_fun_args )
     (38) expr -> . vector
     (39) expr -> . expr DOTMINUS expr
     (40) expr -> . expr DOTPLUS expr
@@ -3021,16 +2969,16 @@ state 75
     (59) expr -> . FLOATNUM
     (60) expr -> . INTNUM
     (61) expr -> . STRING
-    (81) mat_fun -> . ONES
-    (82) mat_fun -> . EYE
-    (83) mat_fun -> . ZEROS
+    (83) mat_fun -> . ONES
+    (84) mat_fun -> . EYE
+    (85) mat_fun -> . ZEROS
     (78) vector -> . [ variables ]
     (75) unary -> . expr '
     (76) unary -> . NOT expr
     (77) unary -> . - expr
     (62) var -> . ID
     (63) var -> . matel
-    (64) matel -> . ID [ expr , expr ]
+    (64) matel -> . ID [ mat_fun_args ]
     (               shift and go to state 33
     FLOATNUM        shift and go to state 38
     INTNUM          shift and go to state 39
@@ -3044,6 +2992,64 @@ state 75
     ID              shift and go to state 18
 
     expr                           shift and go to state 116
+    mat_fun                        shift and go to state 32
+    vector                         shift and go to state 34
+    unary                          shift and go to state 36
+    var                            shift and go to state 37
+    matel                          shift and go to state 21
+
+state 75
+
+    (55) expr -> expr + . expr
+    (36) expr -> . mat_fun ( error )
+    (37) expr -> . mat_fun ( mat_fun_args )
+    (38) expr -> . vector
+    (39) expr -> . expr DOTMINUS expr
+    (40) expr -> . expr DOTPLUS expr
+    (41) expr -> . expr DOTDIVIDE expr
+    (42) expr -> . expr DOTMULTIPLY expr
+    (43) expr -> . expr OR expr
+    (44) expr -> . expr AND expr
+    (45) expr -> . expr XOR expr
+    (46) expr -> . expr GTE expr
+    (47) expr -> . expr LTE expr
+    (48) expr -> . expr GT expr
+    (49) expr -> . expr LT expr
+    (50) expr -> . expr NEQ expr
+    (51) expr -> . expr EQ expr
+    (52) expr -> . expr / expr
+    (53) expr -> . expr * expr
+    (54) expr -> . expr - expr
+    (55) expr -> . expr + expr
+    (56) expr -> . unary
+    (57) expr -> . ( expr )
+    (58) expr -> . var
+    (59) expr -> . FLOATNUM
+    (60) expr -> . INTNUM
+    (61) expr -> . STRING
+    (83) mat_fun -> . ONES
+    (84) mat_fun -> . EYE
+    (85) mat_fun -> . ZEROS
+    (78) vector -> . [ variables ]
+    (75) unary -> . expr '
+    (76) unary -> . NOT expr
+    (77) unary -> . - expr
+    (62) var -> . ID
+    (63) var -> . matel
+    (64) matel -> . ID [ mat_fun_args ]
+    (               shift and go to state 33
+    FLOATNUM        shift and go to state 38
+    INTNUM          shift and go to state 39
+    STRING          shift and go to state 40
+    ONES            shift and go to state 41
+    EYE             shift and go to state 42
+    ZEROS           shift and go to state 43
+    [               shift and go to state 44
+    NOT             shift and go to state 45
+    -               shift and go to state 35
+    ID              shift and go to state 18
+
+    expr                           shift and go to state 117
     mat_fun                        shift and go to state 32
     vector                         shift and go to state 34
     unary                          shift and go to state 36
@@ -3078,8 +3084,8 @@ state 76
     :               reduce using rule 75 (unary -> expr ' .)
     error           reduce using rule 75 (unary -> expr ' .)
     {               reduce using rule 75 (unary -> expr ' .)
-    CONTINUE        reduce using rule 75 (unary -> expr ' .)
     BREAK           reduce using rule 75 (unary -> expr ' .)
+    CONTINUE        reduce using rule 75 (unary -> expr ' .)
     PRINT           reduce using rule 75 (unary -> expr ' .)
     WHILE           reduce using rule 75 (unary -> expr ' .)
     FOR             reduce using rule 75 (unary -> expr ' .)
@@ -3091,9 +3097,11 @@ state 76
 state 77
 
     (36) expr -> mat_fun ( . error )
-    (37) expr -> mat_fun ( . expr )
+    (37) expr -> mat_fun ( . mat_fun_args )
+    (81) mat_fun_args -> . expr
+    (82) mat_fun_args -> . mat_fun_args , expr
     (36) expr -> . mat_fun ( error )
-    (37) expr -> . mat_fun ( expr )
+    (37) expr -> . mat_fun ( mat_fun_args )
     (38) expr -> . vector
     (39) expr -> . expr DOTMINUS expr
     (40) expr -> . expr DOTPLUS expr
@@ -3118,17 +3126,17 @@ state 77
     (59) expr -> . FLOATNUM
     (60) expr -> . INTNUM
     (61) expr -> . STRING
-    (81) mat_fun -> . ONES
-    (82) mat_fun -> . EYE
-    (83) mat_fun -> . ZEROS
+    (83) mat_fun -> . ONES
+    (84) mat_fun -> . EYE
+    (85) mat_fun -> . ZEROS
     (78) vector -> . [ variables ]
     (75) unary -> . expr '
     (76) unary -> . NOT expr
     (77) unary -> . - expr
     (62) var -> . ID
     (63) var -> . matel
-    (64) matel -> . ID [ expr , expr ]
-    error           shift and go to state 117
+    (64) matel -> . ID [ mat_fun_args ]
+    error           shift and go to state 118
     (               shift and go to state 33
     FLOATNUM        shift and go to state 38
     INTNUM          shift and go to state 39
@@ -3142,7 +3150,8 @@ state 77
     ID              shift and go to state 18
 
     mat_fun                        shift and go to state 32
-    expr                           shift and go to state 118
+    mat_fun_args                   shift and go to state 119
+    expr                           shift and go to state 97
     vector                         shift and go to state 34
     unary                          shift and go to state 36
     var                            shift and go to state 37
@@ -3169,7 +3178,7 @@ state 78
     (54) expr -> expr . - expr
     (55) expr -> expr . + expr
     (75) unary -> expr . '
-    )               shift and go to state 119
+    )               shift and go to state 120
     DOTMINUS        shift and go to state 59
     DOTPLUS         shift and go to state 60
     DOTDIVIDE       shift and go to state 61
@@ -3236,8 +3245,8 @@ state 79
     :               reduce using rule 77 (unary -> - expr .)
     error           reduce using rule 77 (unary -> - expr .)
     {               reduce using rule 77 (unary -> - expr .)
-    CONTINUE        reduce using rule 77 (unary -> - expr .)
     BREAK           reduce using rule 77 (unary -> - expr .)
+    CONTINUE        reduce using rule 77 (unary -> - expr .)
     PRINT           reduce using rule 77 (unary -> - expr .)
     WHILE           reduce using rule 77 (unary -> - expr .)
     FOR             reduce using rule 77 (unary -> - expr .)
@@ -3250,8 +3259,8 @@ state 80
 
     (78) vector -> [ variables . ]
     (80) variables -> variables . , expr
-    ]               shift and go to state 120
-    ,               shift and go to state 121
+    ]               shift and go to state 121
+    ,               shift and go to state 122
 
 
 state 81
@@ -3343,8 +3352,8 @@ state 82
     :               reduce using rule 76 (unary -> NOT expr .)
     error           reduce using rule 76 (unary -> NOT expr .)
     {               reduce using rule 76 (unary -> NOT expr .)
-    CONTINUE        reduce using rule 76 (unary -> NOT expr .)
     BREAK           reduce using rule 76 (unary -> NOT expr .)
+    CONTINUE        reduce using rule 76 (unary -> NOT expr .)
     PRINT           reduce using rule 76 (unary -> NOT expr .)
     WHILE           reduce using rule 76 (unary -> NOT expr .)
     FOR             reduce using rule 76 (unary -> NOT expr .)
@@ -3615,7 +3624,7 @@ state 93
     (54) expr -> expr . - expr
     (55) expr -> expr . + expr
     (75) unary -> expr . '
-    )               shift and go to state 122
+    )               shift and go to state 123
     DOTMINUS        shift and go to state 59
     DOTPLUS         shift and go to state 60
     DOTDIVIDE       shift and go to state 61
@@ -3639,7 +3648,7 @@ state 93
 state 94
 
     (23) while_l -> WHILE ( error . ) instruction
-    )               shift and go to state 123
+    )               shift and go to state 124
 
 
 state 95
@@ -3649,7 +3658,7 @@ state 95
     (27) for_l -> FOR ID = . error : expr instruction
     (28) for_l -> FOR ID = . expr : expr instruction
     (36) expr -> . mat_fun ( error )
-    (37) expr -> . mat_fun ( expr )
+    (37) expr -> . mat_fun ( mat_fun_args )
     (38) expr -> . vector
     (39) expr -> . expr DOTMINUS expr
     (40) expr -> . expr DOTPLUS expr
@@ -3674,17 +3683,17 @@ state 95
     (59) expr -> . FLOATNUM
     (60) expr -> . INTNUM
     (61) expr -> . STRING
-    (81) mat_fun -> . ONES
-    (82) mat_fun -> . EYE
-    (83) mat_fun -> . ZEROS
+    (83) mat_fun -> . ONES
+    (84) mat_fun -> . EYE
+    (85) mat_fun -> . ZEROS
     (78) vector -> . [ variables ]
     (75) unary -> . expr '
     (76) unary -> . NOT expr
     (77) unary -> . - expr
     (62) var -> . ID
     (63) var -> . matel
-    (64) matel -> . ID [ expr , expr ]
-    error           shift and go to state 125
+    (64) matel -> . ID [ mat_fun_args ]
+    error           shift and go to state 126
     (               shift and go to state 33
     FLOATNUM        shift and go to state 38
     INTNUM          shift and go to state 39
@@ -3697,7 +3706,7 @@ state 95
     -               shift and go to state 35
     ID              shift and go to state 18
 
-    expr                           shift and go to state 124
+    expr                           shift and go to state 125
     mat_fun                        shift and go to state 32
     vector                         shift and go to state 34
     unary                          shift and go to state 36
@@ -3706,7 +3715,15 @@ state 95
 
 state 96
 
-    (64) matel -> ID [ expr . , expr ]
+    (64) matel -> ID [ mat_fun_args . ]
+    (82) mat_fun_args -> mat_fun_args . , expr
+    ]               shift and go to state 127
+    ,               shift and go to state 128
+
+
+state 97
+
+    (81) mat_fun_args -> expr .
     (39) expr -> expr . DOTMINUS expr
     (40) expr -> expr . DOTPLUS expr
     (41) expr -> expr . DOTDIVIDE expr
@@ -3725,7 +3742,9 @@ state 96
     (54) expr -> expr . - expr
     (55) expr -> expr . + expr
     (75) unary -> expr . '
-    ,               shift and go to state 126
+    ]               reduce using rule 81 (mat_fun_args -> expr .)
+    ,               reduce using rule 81 (mat_fun_args -> expr .)
+    )               reduce using rule 81 (mat_fun_args -> expr .)
     DOTMINUS        shift and go to state 59
     DOTPLUS         shift and go to state 60
     DOTDIVIDE       shift and go to state 61
@@ -3746,7 +3765,7 @@ state 96
     '               shift and go to state 76
 
 
-state 97
+state 98
 
     (15) if_i -> IF ( expr . ) instruction ELSE error
     (16) if_i -> IF ( expr . ) error ELSE instruction
@@ -3771,7 +3790,7 @@ state 97
     (54) expr -> expr . - expr
     (55) expr -> expr . + expr
     (75) unary -> expr . '
-    )               shift and go to state 127
+    )               shift and go to state 129
     DOTMINUS        shift and go to state 59
     DOTPLUS         shift and go to state 60
     DOTDIVIDE       shift and go to state 61
@@ -3792,20 +3811,20 @@ state 97
     '               shift and go to state 76
 
 
-state 98
+state 99
 
     (18) if_i -> IF ( error . ) instruction ELSE instruction
     (19) if_i -> IF ( error . ) instruction
-    )               shift and go to state 128
+    )               shift and go to state 130
 
 
-state 99
+state 100
 
     (35) printargs -> expr , printargs .
     ;               reduce using rule 35 (printargs -> expr , printargs .)
 
 
-state 100
+state 101
 
     (39) expr -> expr DOTMINUS expr .
     (39) expr -> expr . DOTMINUS expr
@@ -3842,8 +3861,8 @@ state 100
     :               reduce using rule 39 (expr -> expr DOTMINUS expr .)
     error           reduce using rule 39 (expr -> expr DOTMINUS expr .)
     {               reduce using rule 39 (expr -> expr DOTMINUS expr .)
-    CONTINUE        reduce using rule 39 (expr -> expr DOTMINUS expr .)
     BREAK           reduce using rule 39 (expr -> expr DOTMINUS expr .)
+    CONTINUE        reduce using rule 39 (expr -> expr DOTMINUS expr .)
     PRINT           reduce using rule 39 (expr -> expr DOTMINUS expr .)
     WHILE           reduce using rule 39 (expr -> expr DOTMINUS expr .)
     FOR             reduce using rule 39 (expr -> expr DOTMINUS expr .)
@@ -3861,7 +3880,7 @@ state 100
     '               shift and go to state 76
 
 
-state 101
+state 102
 
     (40) expr -> expr DOTPLUS expr .
     (39) expr -> expr . DOTMINUS expr
@@ -3898,8 +3917,8 @@ state 101
     :               reduce using rule 40 (expr -> expr DOTPLUS expr .)
     error           reduce using rule 40 (expr -> expr DOTPLUS expr .)
     {               reduce using rule 40 (expr -> expr DOTPLUS expr .)
-    CONTINUE        reduce using rule 40 (expr -> expr DOTPLUS expr .)
     BREAK           reduce using rule 40 (expr -> expr DOTPLUS expr .)
+    CONTINUE        reduce using rule 40 (expr -> expr DOTPLUS expr .)
     PRINT           reduce using rule 40 (expr -> expr DOTPLUS expr .)
     WHILE           reduce using rule 40 (expr -> expr DOTPLUS expr .)
     FOR             reduce using rule 40 (expr -> expr DOTPLUS expr .)
@@ -3917,7 +3936,7 @@ state 101
     '               shift and go to state 76
 
 
-state 102
+state 103
 
     (41) expr -> expr DOTDIVIDE expr .
     (39) expr -> expr . DOTMINUS expr
@@ -3956,8 +3975,8 @@ state 102
     :               reduce using rule 41 (expr -> expr DOTDIVIDE expr .)
     error           reduce using rule 41 (expr -> expr DOTDIVIDE expr .)
     {               reduce using rule 41 (expr -> expr DOTDIVIDE expr .)
-    CONTINUE        reduce using rule 41 (expr -> expr DOTDIVIDE expr .)
     BREAK           reduce using rule 41 (expr -> expr DOTDIVIDE expr .)
+    CONTINUE        reduce using rule 41 (expr -> expr DOTDIVIDE expr .)
     PRINT           reduce using rule 41 (expr -> expr DOTDIVIDE expr .)
     WHILE           reduce using rule 41 (expr -> expr DOTDIVIDE expr .)
     FOR             reduce using rule 41 (expr -> expr DOTDIVIDE expr .)
@@ -3973,7 +3992,7 @@ state 102
     '               shift and go to state 76
 
 
-state 103
+state 104
 
     (42) expr -> expr DOTMULTIPLY expr .
     (39) expr -> expr . DOTMINUS expr
@@ -4012,8 +4031,8 @@ state 103
     :               reduce using rule 42 (expr -> expr DOTMULTIPLY expr .)
     error           reduce using rule 42 (expr -> expr DOTMULTIPLY expr .)
     {               reduce using rule 42 (expr -> expr DOTMULTIPLY expr .)
-    CONTINUE        reduce using rule 42 (expr -> expr DOTMULTIPLY expr .)
     BREAK           reduce using rule 42 (expr -> expr DOTMULTIPLY expr .)
+    CONTINUE        reduce using rule 42 (expr -> expr DOTMULTIPLY expr .)
     PRINT           reduce using rule 42 (expr -> expr DOTMULTIPLY expr .)
     WHILE           reduce using rule 42 (expr -> expr DOTMULTIPLY expr .)
     FOR             reduce using rule 42 (expr -> expr DOTMULTIPLY expr .)
@@ -4029,7 +4048,7 @@ state 103
     '               shift and go to state 76
 
 
-state 104
+state 105
 
     (43) expr -> expr OR expr .
     (39) expr -> expr . DOTMINUS expr
@@ -4060,8 +4079,8 @@ state 104
     :               reduce using rule 43 (expr -> expr OR expr .)
     error           reduce using rule 43 (expr -> expr OR expr .)
     {               reduce using rule 43 (expr -> expr OR expr .)
-    CONTINUE        reduce using rule 43 (expr -> expr OR expr .)
     BREAK           reduce using rule 43 (expr -> expr OR expr .)
+    CONTINUE        reduce using rule 43 (expr -> expr OR expr .)
     PRINT           reduce using rule 43 (expr -> expr OR expr .)
     WHILE           reduce using rule 43 (expr -> expr OR expr .)
     FOR             reduce using rule 43 (expr -> expr OR expr .)
@@ -4085,7 +4104,7 @@ state 104
     '               shift and go to state 76
 
 
-state 105
+state 106
 
     (44) expr -> expr AND expr .
     (39) expr -> expr . DOTMINUS expr
@@ -4116,8 +4135,8 @@ state 105
     :               reduce using rule 44 (expr -> expr AND expr .)
     error           reduce using rule 44 (expr -> expr AND expr .)
     {               reduce using rule 44 (expr -> expr AND expr .)
-    CONTINUE        reduce using rule 44 (expr -> expr AND expr .)
     BREAK           reduce using rule 44 (expr -> expr AND expr .)
+    CONTINUE        reduce using rule 44 (expr -> expr AND expr .)
     PRINT           reduce using rule 44 (expr -> expr AND expr .)
     WHILE           reduce using rule 44 (expr -> expr AND expr .)
     FOR             reduce using rule 44 (expr -> expr AND expr .)
@@ -4141,7 +4160,7 @@ state 105
     '               shift and go to state 76
 
 
-state 106
+state 107
 
     (45) expr -> expr XOR expr .
     (39) expr -> expr . DOTMINUS expr
@@ -4172,8 +4191,8 @@ state 106
     :               reduce using rule 45 (expr -> expr XOR expr .)
     error           reduce using rule 45 (expr -> expr XOR expr .)
     {               reduce using rule 45 (expr -> expr XOR expr .)
-    CONTINUE        reduce using rule 45 (expr -> expr XOR expr .)
     BREAK           reduce using rule 45 (expr -> expr XOR expr .)
+    CONTINUE        reduce using rule 45 (expr -> expr XOR expr .)
     PRINT           reduce using rule 45 (expr -> expr XOR expr .)
     WHILE           reduce using rule 45 (expr -> expr XOR expr .)
     FOR             reduce using rule 45 (expr -> expr XOR expr .)
@@ -4197,7 +4216,7 @@ state 106
     '               shift and go to state 76
 
 
-state 107
+state 108
 
     (46) expr -> expr GTE expr .
     (39) expr -> expr . DOTMINUS expr
@@ -4242,8 +4261,8 @@ state 107
     :               reduce using rule 46 (expr -> expr GTE expr .)
     error           reduce using rule 46 (expr -> expr GTE expr .)
     {               reduce using rule 46 (expr -> expr GTE expr .)
-    CONTINUE        reduce using rule 46 (expr -> expr GTE expr .)
     BREAK           reduce using rule 46 (expr -> expr GTE expr .)
+    CONTINUE        reduce using rule 46 (expr -> expr GTE expr .)
     PRINT           reduce using rule 46 (expr -> expr GTE expr .)
     WHILE           reduce using rule 46 (expr -> expr GTE expr .)
     FOR             reduce using rule 46 (expr -> expr GTE expr .)
@@ -4253,7 +4272,7 @@ state 107
     '               shift and go to state 76
 
 
-state 108
+state 109
 
     (47) expr -> expr LTE expr .
     (39) expr -> expr . DOTMINUS expr
@@ -4298,8 +4317,8 @@ state 108
     :               reduce using rule 47 (expr -> expr LTE expr .)
     error           reduce using rule 47 (expr -> expr LTE expr .)
     {               reduce using rule 47 (expr -> expr LTE expr .)
-    CONTINUE        reduce using rule 47 (expr -> expr LTE expr .)
     BREAK           reduce using rule 47 (expr -> expr LTE expr .)
+    CONTINUE        reduce using rule 47 (expr -> expr LTE expr .)
     PRINT           reduce using rule 47 (expr -> expr LTE expr .)
     WHILE           reduce using rule 47 (expr -> expr LTE expr .)
     FOR             reduce using rule 47 (expr -> expr LTE expr .)
@@ -4309,7 +4328,7 @@ state 108
     '               shift and go to state 76
 
 
-state 109
+state 110
 
     (48) expr -> expr GT expr .
     (39) expr -> expr . DOTMINUS expr
@@ -4354,8 +4373,8 @@ state 109
     :               reduce using rule 48 (expr -> expr GT expr .)
     error           reduce using rule 48 (expr -> expr GT expr .)
     {               reduce using rule 48 (expr -> expr GT expr .)
-    CONTINUE        reduce using rule 48 (expr -> expr GT expr .)
     BREAK           reduce using rule 48 (expr -> expr GT expr .)
+    CONTINUE        reduce using rule 48 (expr -> expr GT expr .)
     PRINT           reduce using rule 48 (expr -> expr GT expr .)
     WHILE           reduce using rule 48 (expr -> expr GT expr .)
     FOR             reduce using rule 48 (expr -> expr GT expr .)
@@ -4365,7 +4384,7 @@ state 109
     '               shift and go to state 76
 
 
-state 110
+state 111
 
     (49) expr -> expr LT expr .
     (39) expr -> expr . DOTMINUS expr
@@ -4410,8 +4429,8 @@ state 110
     :               reduce using rule 49 (expr -> expr LT expr .)
     error           reduce using rule 49 (expr -> expr LT expr .)
     {               reduce using rule 49 (expr -> expr LT expr .)
-    CONTINUE        reduce using rule 49 (expr -> expr LT expr .)
     BREAK           reduce using rule 49 (expr -> expr LT expr .)
+    CONTINUE        reduce using rule 49 (expr -> expr LT expr .)
     PRINT           reduce using rule 49 (expr -> expr LT expr .)
     WHILE           reduce using rule 49 (expr -> expr LT expr .)
     FOR             reduce using rule 49 (expr -> expr LT expr .)
@@ -4421,7 +4440,7 @@ state 110
     '               shift and go to state 76
 
 
-state 111
+state 112
 
     (50) expr -> expr NEQ expr .
     (39) expr -> expr . DOTMINUS expr
@@ -4466,8 +4485,8 @@ state 111
     :               reduce using rule 50 (expr -> expr NEQ expr .)
     error           reduce using rule 50 (expr -> expr NEQ expr .)
     {               reduce using rule 50 (expr -> expr NEQ expr .)
-    CONTINUE        reduce using rule 50 (expr -> expr NEQ expr .)
     BREAK           reduce using rule 50 (expr -> expr NEQ expr .)
+    CONTINUE        reduce using rule 50 (expr -> expr NEQ expr .)
     PRINT           reduce using rule 50 (expr -> expr NEQ expr .)
     WHILE           reduce using rule 50 (expr -> expr NEQ expr .)
     FOR             reduce using rule 50 (expr -> expr NEQ expr .)
@@ -4477,7 +4496,7 @@ state 111
     '               shift and go to state 76
 
 
-state 112
+state 113
 
     (51) expr -> expr EQ expr .
     (39) expr -> expr . DOTMINUS expr
@@ -4522,8 +4541,8 @@ state 112
     :               reduce using rule 51 (expr -> expr EQ expr .)
     error           reduce using rule 51 (expr -> expr EQ expr .)
     {               reduce using rule 51 (expr -> expr EQ expr .)
-    CONTINUE        reduce using rule 51 (expr -> expr EQ expr .)
     BREAK           reduce using rule 51 (expr -> expr EQ expr .)
+    CONTINUE        reduce using rule 51 (expr -> expr EQ expr .)
     PRINT           reduce using rule 51 (expr -> expr EQ expr .)
     WHILE           reduce using rule 51 (expr -> expr EQ expr .)
     FOR             reduce using rule 51 (expr -> expr EQ expr .)
@@ -4533,7 +4552,7 @@ state 112
     '               shift and go to state 76
 
 
-state 113
+state 114
 
     (52) expr -> expr / expr .
     (39) expr -> expr . DOTMINUS expr
@@ -4568,8 +4587,8 @@ state 113
     :               reduce using rule 52 (expr -> expr / expr .)
     error           reduce using rule 52 (expr -> expr / expr .)
     {               reduce using rule 52 (expr -> expr / expr .)
-    CONTINUE        reduce using rule 52 (expr -> expr / expr .)
     BREAK           reduce using rule 52 (expr -> expr / expr .)
+    CONTINUE        reduce using rule 52 (expr -> expr / expr .)
     PRINT           reduce using rule 52 (expr -> expr / expr .)
     WHILE           reduce using rule 52 (expr -> expr / expr .)
     FOR             reduce using rule 52 (expr -> expr / expr .)
@@ -4589,7 +4608,7 @@ state 113
     '               shift and go to state 76
 
 
-state 114
+state 115
 
     (53) expr -> expr * expr .
     (39) expr -> expr . DOTMINUS expr
@@ -4624,8 +4643,8 @@ state 114
     :               reduce using rule 53 (expr -> expr * expr .)
     error           reduce using rule 53 (expr -> expr * expr .)
     {               reduce using rule 53 (expr -> expr * expr .)
-    CONTINUE        reduce using rule 53 (expr -> expr * expr .)
     BREAK           reduce using rule 53 (expr -> expr * expr .)
+    CONTINUE        reduce using rule 53 (expr -> expr * expr .)
     PRINT           reduce using rule 53 (expr -> expr * expr .)
     WHILE           reduce using rule 53 (expr -> expr * expr .)
     FOR             reduce using rule 53 (expr -> expr * expr .)
@@ -4645,7 +4664,7 @@ state 114
     '               shift and go to state 76
 
 
-state 115
+state 116
 
     (54) expr -> expr - expr .
     (39) expr -> expr . DOTMINUS expr
@@ -4678,8 +4697,8 @@ state 115
     :               reduce using rule 54 (expr -> expr - expr .)
     error           reduce using rule 54 (expr -> expr - expr .)
     {               reduce using rule 54 (expr -> expr - expr .)
-    CONTINUE        reduce using rule 54 (expr -> expr - expr .)
     BREAK           reduce using rule 54 (expr -> expr - expr .)
+    CONTINUE        reduce using rule 54 (expr -> expr - expr .)
     PRINT           reduce using rule 54 (expr -> expr - expr .)
     WHILE           reduce using rule 54 (expr -> expr - expr .)
     FOR             reduce using rule 54 (expr -> expr - expr .)
@@ -4701,7 +4720,7 @@ state 115
     '               shift and go to state 76
 
 
-state 116
+state 117
 
     (55) expr -> expr + expr .
     (39) expr -> expr . DOTMINUS expr
@@ -4734,8 +4753,8 @@ state 116
     :               reduce using rule 55 (expr -> expr + expr .)
     error           reduce using rule 55 (expr -> expr + expr .)
     {               reduce using rule 55 (expr -> expr + expr .)
-    CONTINUE        reduce using rule 55 (expr -> expr + expr .)
     BREAK           reduce using rule 55 (expr -> expr + expr .)
+    CONTINUE        reduce using rule 55 (expr -> expr + expr .)
     PRINT           reduce using rule 55 (expr -> expr + expr .)
     WHILE           reduce using rule 55 (expr -> expr + expr .)
     FOR             reduce using rule 55 (expr -> expr + expr .)
@@ -4757,55 +4776,21 @@ state 116
     '               shift and go to state 76
 
 
-state 117
-
-    (36) expr -> mat_fun ( error . )
-    )               shift and go to state 129
-
-
 state 118
 
-    (37) expr -> mat_fun ( expr . )
-    (39) expr -> expr . DOTMINUS expr
-    (40) expr -> expr . DOTPLUS expr
-    (41) expr -> expr . DOTDIVIDE expr
-    (42) expr -> expr . DOTMULTIPLY expr
-    (43) expr -> expr . OR expr
-    (44) expr -> expr . AND expr
-    (45) expr -> expr . XOR expr
-    (46) expr -> expr . GTE expr
-    (47) expr -> expr . LTE expr
-    (48) expr -> expr . GT expr
-    (49) expr -> expr . LT expr
-    (50) expr -> expr . NEQ expr
-    (51) expr -> expr . EQ expr
-    (52) expr -> expr . / expr
-    (53) expr -> expr . * expr
-    (54) expr -> expr . - expr
-    (55) expr -> expr . + expr
-    (75) unary -> expr . '
-    )               shift and go to state 130
-    DOTMINUS        shift and go to state 59
-    DOTPLUS         shift and go to state 60
-    DOTDIVIDE       shift and go to state 61
-    DOTMULTIPLY     shift and go to state 62
-    OR              shift and go to state 63
-    AND             shift and go to state 64
-    XOR             shift and go to state 65
-    GTE             shift and go to state 66
-    LTE             shift and go to state 67
-    GT              shift and go to state 68
-    LT              shift and go to state 69
-    NEQ             shift and go to state 70
-    EQ              shift and go to state 71
-    /               shift and go to state 72
-    *               shift and go to state 73
-    -               shift and go to state 74
-    +               shift and go to state 75
-    '               shift and go to state 76
+    (36) expr -> mat_fun ( error . )
+    )               shift and go to state 131
 
 
 state 119
+
+    (37) expr -> mat_fun ( mat_fun_args . )
+    (82) mat_fun_args -> mat_fun_args . , expr
+    )               shift and go to state 132
+    ,               shift and go to state 128
+
+
+state 120
 
     (57) expr -> ( expr ) .
     ,               reduce using rule 57 (expr -> ( expr ) .)
@@ -4833,8 +4818,8 @@ state 119
     :               reduce using rule 57 (expr -> ( expr ) .)
     error           reduce using rule 57 (expr -> ( expr ) .)
     {               reduce using rule 57 (expr -> ( expr ) .)
-    CONTINUE        reduce using rule 57 (expr -> ( expr ) .)
     BREAK           reduce using rule 57 (expr -> ( expr ) .)
+    CONTINUE        reduce using rule 57 (expr -> ( expr ) .)
     PRINT           reduce using rule 57 (expr -> ( expr ) .)
     WHILE           reduce using rule 57 (expr -> ( expr ) .)
     FOR             reduce using rule 57 (expr -> ( expr ) .)
@@ -4843,7 +4828,7 @@ state 119
     ID              reduce using rule 57 (expr -> ( expr ) .)
 
 
-state 120
+state 121
 
     (78) vector -> [ variables ] .
     ,               reduce using rule 78 (vector -> [ variables ] .)
@@ -4871,8 +4856,8 @@ state 120
     :               reduce using rule 78 (vector -> [ variables ] .)
     error           reduce using rule 78 (vector -> [ variables ] .)
     {               reduce using rule 78 (vector -> [ variables ] .)
-    CONTINUE        reduce using rule 78 (vector -> [ variables ] .)
     BREAK           reduce using rule 78 (vector -> [ variables ] .)
+    CONTINUE        reduce using rule 78 (vector -> [ variables ] .)
     PRINT           reduce using rule 78 (vector -> [ variables ] .)
     WHILE           reduce using rule 78 (vector -> [ variables ] .)
     FOR             reduce using rule 78 (vector -> [ variables ] .)
@@ -4881,11 +4866,11 @@ state 120
     ID              reduce using rule 78 (vector -> [ variables ] .)
 
 
-state 121
+state 122
 
     (80) variables -> variables , . expr
     (36) expr -> . mat_fun ( error )
-    (37) expr -> . mat_fun ( expr )
+    (37) expr -> . mat_fun ( mat_fun_args )
     (38) expr -> . vector
     (39) expr -> . expr DOTMINUS expr
     (40) expr -> . expr DOTPLUS expr
@@ -4910,16 +4895,16 @@ state 121
     (59) expr -> . FLOATNUM
     (60) expr -> . INTNUM
     (61) expr -> . STRING
-    (81) mat_fun -> . ONES
-    (82) mat_fun -> . EYE
-    (83) mat_fun -> . ZEROS
+    (83) mat_fun -> . ONES
+    (84) mat_fun -> . EYE
+    (85) mat_fun -> . ZEROS
     (78) vector -> . [ variables ]
     (75) unary -> . expr '
     (76) unary -> . NOT expr
     (77) unary -> . - expr
     (62) var -> . ID
     (63) var -> . matel
-    (64) matel -> . ID [ expr , expr ]
+    (64) matel -> . ID [ mat_fun_args ]
     (               shift and go to state 33
     FLOATNUM        shift and go to state 38
     INTNUM          shift and go to state 39
@@ -4932,24 +4917,24 @@ state 121
     -               shift and go to state 35
     ID              shift and go to state 18
 
-    expr                           shift and go to state 131
+    expr                           shift and go to state 133
     mat_fun                        shift and go to state 32
     vector                         shift and go to state 34
     unary                          shift and go to state 36
     var                            shift and go to state 37
     matel                          shift and go to state 21
 
-state 122
+state 123
 
     (22) while_l -> WHILE ( expr ) . error
     (24) while_l -> WHILE ( expr ) . instruction
     (6) instruction -> . { instructions }
-    (7) instruction -> . print_i ;
-    (8) instruction -> . assign ;
-    (9) instruction -> . while_l
-    (10) instruction -> . for_l
-    (11) instruction -> . CONTINUE ;
-    (12) instruction -> . BREAK ;
+    (7) instruction -> . BREAK ;
+    (8) instruction -> . CONTINUE ;
+    (9) instruction -> . print_i ;
+    (10) instruction -> . assign ;
+    (11) instruction -> . while_l
+    (12) instruction -> . for_l
     (13) instruction -> . return_i ;
     (14) instruction -> . if_i
     (32) print_i -> . PRINT error
@@ -4983,11 +4968,11 @@ state 122
     (21) if_i -> . IF ( expr ) instruction
     (62) var -> . ID
     (63) var -> . matel
-    (64) matel -> . ID [ expr , expr ]
-    error           shift and go to state 132
+    (64) matel -> . ID [ mat_fun_args ]
+    error           shift and go to state 134
     {               shift and go to state 5
-    CONTINUE        shift and go to state 10
-    BREAK           shift and go to state 11
+    BREAK           shift and go to state 6
+    CONTINUE        shift and go to state 7
     PRINT           shift and go to state 14
     WHILE           shift and go to state 16
     FOR             shift and go to state 17
@@ -4995,81 +4980,81 @@ state 122
     IF              shift and go to state 20
     ID              shift and go to state 18
 
-    instruction                    shift and go to state 133
-    print_i                        shift and go to state 6
-    assign                         shift and go to state 7
-    while_l                        shift and go to state 8
-    for_l                          shift and go to state 9
-    return_i                       shift and go to state 12
-    if_i                           shift and go to state 13
-    var                            shift and go to state 15
-    matel                          shift and go to state 21
-
-state 123
-
-    (23) while_l -> WHILE ( error ) . instruction
-    (6) instruction -> . { instructions }
-    (7) instruction -> . print_i ;
-    (8) instruction -> . assign ;
-    (9) instruction -> . while_l
-    (10) instruction -> . for_l
-    (11) instruction -> . CONTINUE ;
-    (12) instruction -> . BREAK ;
-    (13) instruction -> . return_i ;
-    (14) instruction -> . if_i
-    (32) print_i -> . PRINT error
-    (33) print_i -> . PRINT printargs
-    (65) assign -> . var DIVIDEASSIGN error
-    (66) assign -> . var MULTIPLYASSIGN error
-    (67) assign -> . var MINUSASSIGN error
-    (68) assign -> . var PLUSASSIGN error
-    (69) assign -> . var = error
-    (70) assign -> . var DIVIDEASSIGN expr
-    (71) assign -> . var MULTIPLYASSIGN expr
-    (72) assign -> . var MINUSASSIGN expr
-    (73) assign -> . var PLUSASSIGN expr
-    (74) assign -> . var = expr
-    (22) while_l -> . WHILE ( expr ) error
-    (23) while_l -> . WHILE ( error ) instruction
-    (24) while_l -> . WHILE ( expr ) instruction
-    (25) for_l -> . FOR ID = expr : expr error
-    (26) for_l -> . FOR ID = expr : error instruction
-    (27) for_l -> . FOR ID = error : expr instruction
-    (28) for_l -> . FOR ID = expr : expr instruction
-    (29) return_i -> . RETURN error
-    (30) return_i -> . RETURN expr
-    (31) return_i -> . RETURN
-    (15) if_i -> . IF ( expr ) instruction ELSE error
-    (16) if_i -> . IF ( expr ) error ELSE instruction
-    (17) if_i -> . IF ( expr ) error
-    (18) if_i -> . IF ( error ) instruction ELSE instruction
-    (19) if_i -> . IF ( error ) instruction
-    (20) if_i -> . IF ( expr ) instruction ELSE instruction
-    (21) if_i -> . IF ( expr ) instruction
-    (62) var -> . ID
-    (63) var -> . matel
-    (64) matel -> . ID [ expr , expr ]
-    {               shift and go to state 5
-    CONTINUE        shift and go to state 10
-    BREAK           shift and go to state 11
-    PRINT           shift and go to state 14
-    WHILE           shift and go to state 16
-    FOR             shift and go to state 17
-    RETURN          shift and go to state 19
-    IF              shift and go to state 20
-    ID              shift and go to state 18
-
-    instruction                    shift and go to state 134
-    print_i                        shift and go to state 6
-    assign                         shift and go to state 7
-    while_l                        shift and go to state 8
-    for_l                          shift and go to state 9
+    instruction                    shift and go to state 135
+    print_i                        shift and go to state 8
+    assign                         shift and go to state 9
+    while_l                        shift and go to state 10
+    for_l                          shift and go to state 11
     return_i                       shift and go to state 12
     if_i                           shift and go to state 13
     var                            shift and go to state 15
     matel                          shift and go to state 21
 
 state 124
+
+    (23) while_l -> WHILE ( error ) . instruction
+    (6) instruction -> . { instructions }
+    (7) instruction -> . BREAK ;
+    (8) instruction -> . CONTINUE ;
+    (9) instruction -> . print_i ;
+    (10) instruction -> . assign ;
+    (11) instruction -> . while_l
+    (12) instruction -> . for_l
+    (13) instruction -> . return_i ;
+    (14) instruction -> . if_i
+    (32) print_i -> . PRINT error
+    (33) print_i -> . PRINT printargs
+    (65) assign -> . var DIVIDEASSIGN error
+    (66) assign -> . var MULTIPLYASSIGN error
+    (67) assign -> . var MINUSASSIGN error
+    (68) assign -> . var PLUSASSIGN error
+    (69) assign -> . var = error
+    (70) assign -> . var DIVIDEASSIGN expr
+    (71) assign -> . var MULTIPLYASSIGN expr
+    (72) assign -> . var MINUSASSIGN expr
+    (73) assign -> . var PLUSASSIGN expr
+    (74) assign -> . var = expr
+    (22) while_l -> . WHILE ( expr ) error
+    (23) while_l -> . WHILE ( error ) instruction
+    (24) while_l -> . WHILE ( expr ) instruction
+    (25) for_l -> . FOR ID = expr : expr error
+    (26) for_l -> . FOR ID = expr : error instruction
+    (27) for_l -> . FOR ID = error : expr instruction
+    (28) for_l -> . FOR ID = expr : expr instruction
+    (29) return_i -> . RETURN error
+    (30) return_i -> . RETURN expr
+    (31) return_i -> . RETURN
+    (15) if_i -> . IF ( expr ) instruction ELSE error
+    (16) if_i -> . IF ( expr ) error ELSE instruction
+    (17) if_i -> . IF ( expr ) error
+    (18) if_i -> . IF ( error ) instruction ELSE instruction
+    (19) if_i -> . IF ( error ) instruction
+    (20) if_i -> . IF ( expr ) instruction ELSE instruction
+    (21) if_i -> . IF ( expr ) instruction
+    (62) var -> . ID
+    (63) var -> . matel
+    (64) matel -> . ID [ mat_fun_args ]
+    {               shift and go to state 5
+    BREAK           shift and go to state 6
+    CONTINUE        shift and go to state 7
+    PRINT           shift and go to state 14
+    WHILE           shift and go to state 16
+    FOR             shift and go to state 17
+    RETURN          shift and go to state 19
+    IF              shift and go to state 20
+    ID              shift and go to state 18
+
+    instruction                    shift and go to state 136
+    print_i                        shift and go to state 8
+    assign                         shift and go to state 9
+    while_l                        shift and go to state 10
+    for_l                          shift and go to state 11
+    return_i                       shift and go to state 12
+    if_i                           shift and go to state 13
+    var                            shift and go to state 15
+    matel                          shift and go to state 21
+
+state 125
 
     (25) for_l -> FOR ID = expr . : expr error
     (26) for_l -> FOR ID = expr . : error instruction
@@ -5092,7 +5077,7 @@ state 124
     (54) expr -> expr . - expr
     (55) expr -> expr . + expr
     (75) unary -> expr . '
-    :               shift and go to state 135
+    :               shift and go to state 137
     DOTMINUS        shift and go to state 59
     DOTPLUS         shift and go to state 60
     DOTDIVIDE       shift and go to state 61
@@ -5113,17 +5098,60 @@ state 124
     '               shift and go to state 76
 
 
-state 125
-
-    (27) for_l -> FOR ID = error . : expr instruction
-    :               shift and go to state 136
-
-
 state 126
 
-    (64) matel -> ID [ expr , . expr ]
+    (27) for_l -> FOR ID = error . : expr instruction
+    :               shift and go to state 138
+
+
+state 127
+
+    (64) matel -> ID [ mat_fun_args ] .
+    DIVIDEASSIGN    reduce using rule 64 (matel -> ID [ mat_fun_args ] .)
+    MULTIPLYASSIGN  reduce using rule 64 (matel -> ID [ mat_fun_args ] .)
+    MINUSASSIGN     reduce using rule 64 (matel -> ID [ mat_fun_args ] .)
+    PLUSASSIGN      reduce using rule 64 (matel -> ID [ mat_fun_args ] .)
+    =               reduce using rule 64 (matel -> ID [ mat_fun_args ] .)
+    ,               reduce using rule 64 (matel -> ID [ mat_fun_args ] .)
+    DOTMINUS        reduce using rule 64 (matel -> ID [ mat_fun_args ] .)
+    DOTPLUS         reduce using rule 64 (matel -> ID [ mat_fun_args ] .)
+    DOTDIVIDE       reduce using rule 64 (matel -> ID [ mat_fun_args ] .)
+    DOTMULTIPLY     reduce using rule 64 (matel -> ID [ mat_fun_args ] .)
+    OR              reduce using rule 64 (matel -> ID [ mat_fun_args ] .)
+    AND             reduce using rule 64 (matel -> ID [ mat_fun_args ] .)
+    XOR             reduce using rule 64 (matel -> ID [ mat_fun_args ] .)
+    GTE             reduce using rule 64 (matel -> ID [ mat_fun_args ] .)
+    LTE             reduce using rule 64 (matel -> ID [ mat_fun_args ] .)
+    GT              reduce using rule 64 (matel -> ID [ mat_fun_args ] .)
+    LT              reduce using rule 64 (matel -> ID [ mat_fun_args ] .)
+    NEQ             reduce using rule 64 (matel -> ID [ mat_fun_args ] .)
+    EQ              reduce using rule 64 (matel -> ID [ mat_fun_args ] .)
+    /               reduce using rule 64 (matel -> ID [ mat_fun_args ] .)
+    *               reduce using rule 64 (matel -> ID [ mat_fun_args ] .)
+    -               reduce using rule 64 (matel -> ID [ mat_fun_args ] .)
+    +               reduce using rule 64 (matel -> ID [ mat_fun_args ] .)
+    '               reduce using rule 64 (matel -> ID [ mat_fun_args ] .)
+    ;               reduce using rule 64 (matel -> ID [ mat_fun_args ] .)
+    )               reduce using rule 64 (matel -> ID [ mat_fun_args ] .)
+    ]               reduce using rule 64 (matel -> ID [ mat_fun_args ] .)
+    :               reduce using rule 64 (matel -> ID [ mat_fun_args ] .)
+    error           reduce using rule 64 (matel -> ID [ mat_fun_args ] .)
+    {               reduce using rule 64 (matel -> ID [ mat_fun_args ] .)
+    BREAK           reduce using rule 64 (matel -> ID [ mat_fun_args ] .)
+    CONTINUE        reduce using rule 64 (matel -> ID [ mat_fun_args ] .)
+    PRINT           reduce using rule 64 (matel -> ID [ mat_fun_args ] .)
+    WHILE           reduce using rule 64 (matel -> ID [ mat_fun_args ] .)
+    FOR             reduce using rule 64 (matel -> ID [ mat_fun_args ] .)
+    RETURN          reduce using rule 64 (matel -> ID [ mat_fun_args ] .)
+    IF              reduce using rule 64 (matel -> ID [ mat_fun_args ] .)
+    ID              reduce using rule 64 (matel -> ID [ mat_fun_args ] .)
+
+
+state 128
+
+    (82) mat_fun_args -> mat_fun_args , . expr
     (36) expr -> . mat_fun ( error )
-    (37) expr -> . mat_fun ( expr )
+    (37) expr -> . mat_fun ( mat_fun_args )
     (38) expr -> . vector
     (39) expr -> . expr DOTMINUS expr
     (40) expr -> . expr DOTPLUS expr
@@ -5148,16 +5176,16 @@ state 126
     (59) expr -> . FLOATNUM
     (60) expr -> . INTNUM
     (61) expr -> . STRING
-    (81) mat_fun -> . ONES
-    (82) mat_fun -> . EYE
-    (83) mat_fun -> . ZEROS
+    (83) mat_fun -> . ONES
+    (84) mat_fun -> . EYE
+    (85) mat_fun -> . ZEROS
     (78) vector -> . [ variables ]
     (75) unary -> . expr '
     (76) unary -> . NOT expr
     (77) unary -> . - expr
     (62) var -> . ID
     (63) var -> . matel
-    (64) matel -> . ID [ expr , expr ]
+    (64) matel -> . ID [ mat_fun_args ]
     (               shift and go to state 33
     FLOATNUM        shift and go to state 38
     INTNUM          shift and go to state 39
@@ -5170,14 +5198,14 @@ state 126
     -               shift and go to state 35
     ID              shift and go to state 18
 
-    expr                           shift and go to state 137
+    expr                           shift and go to state 139
     mat_fun                        shift and go to state 32
     vector                         shift and go to state 34
     unary                          shift and go to state 36
     var                            shift and go to state 37
     matel                          shift and go to state 21
 
-state 127
+state 129
 
     (15) if_i -> IF ( expr ) . instruction ELSE error
     (16) if_i -> IF ( expr ) . error ELSE instruction
@@ -5185,12 +5213,12 @@ state 127
     (20) if_i -> IF ( expr ) . instruction ELSE instruction
     (21) if_i -> IF ( expr ) . instruction
     (6) instruction -> . { instructions }
-    (7) instruction -> . print_i ;
-    (8) instruction -> . assign ;
-    (9) instruction -> . while_l
-    (10) instruction -> . for_l
-    (11) instruction -> . CONTINUE ;
-    (12) instruction -> . BREAK ;
+    (7) instruction -> . BREAK ;
+    (8) instruction -> . CONTINUE ;
+    (9) instruction -> . print_i ;
+    (10) instruction -> . assign ;
+    (11) instruction -> . while_l
+    (12) instruction -> . for_l
     (13) instruction -> . return_i ;
     (14) instruction -> . if_i
     (32) print_i -> . PRINT error
@@ -5224,76 +5252,11 @@ state 127
     (21) if_i -> . IF ( expr ) instruction
     (62) var -> . ID
     (63) var -> . matel
-    (64) matel -> . ID [ expr , expr ]
-    error           shift and go to state 139
+    (64) matel -> . ID [ mat_fun_args ]
+    error           shift and go to state 141
     {               shift and go to state 5
-    CONTINUE        shift and go to state 10
-    BREAK           shift and go to state 11
-    PRINT           shift and go to state 14
-    WHILE           shift and go to state 16
-    FOR             shift and go to state 17
-    RETURN          shift and go to state 19
-    IF              shift and go to state 20
-    ID              shift and go to state 18
-
-    instruction                    shift and go to state 138
-    print_i                        shift and go to state 6
-    assign                         shift and go to state 7
-    while_l                        shift and go to state 8
-    for_l                          shift and go to state 9
-    return_i                       shift and go to state 12
-    if_i                           shift and go to state 13
-    var                            shift and go to state 15
-    matel                          shift and go to state 21
-
-state 128
-
-    (18) if_i -> IF ( error ) . instruction ELSE instruction
-    (19) if_i -> IF ( error ) . instruction
-    (6) instruction -> . { instructions }
-    (7) instruction -> . print_i ;
-    (8) instruction -> . assign ;
-    (9) instruction -> . while_l
-    (10) instruction -> . for_l
-    (11) instruction -> . CONTINUE ;
-    (12) instruction -> . BREAK ;
-    (13) instruction -> . return_i ;
-    (14) instruction -> . if_i
-    (32) print_i -> . PRINT error
-    (33) print_i -> . PRINT printargs
-    (65) assign -> . var DIVIDEASSIGN error
-    (66) assign -> . var MULTIPLYASSIGN error
-    (67) assign -> . var MINUSASSIGN error
-    (68) assign -> . var PLUSASSIGN error
-    (69) assign -> . var = error
-    (70) assign -> . var DIVIDEASSIGN expr
-    (71) assign -> . var MULTIPLYASSIGN expr
-    (72) assign -> . var MINUSASSIGN expr
-    (73) assign -> . var PLUSASSIGN expr
-    (74) assign -> . var = expr
-    (22) while_l -> . WHILE ( expr ) error
-    (23) while_l -> . WHILE ( error ) instruction
-    (24) while_l -> . WHILE ( expr ) instruction
-    (25) for_l -> . FOR ID = expr : expr error
-    (26) for_l -> . FOR ID = expr : error instruction
-    (27) for_l -> . FOR ID = error : expr instruction
-    (28) for_l -> . FOR ID = expr : expr instruction
-    (29) return_i -> . RETURN error
-    (30) return_i -> . RETURN expr
-    (31) return_i -> . RETURN
-    (15) if_i -> . IF ( expr ) instruction ELSE error
-    (16) if_i -> . IF ( expr ) error ELSE instruction
-    (17) if_i -> . IF ( expr ) error
-    (18) if_i -> . IF ( error ) instruction ELSE instruction
-    (19) if_i -> . IF ( error ) instruction
-    (20) if_i -> . IF ( expr ) instruction ELSE instruction
-    (21) if_i -> . IF ( expr ) instruction
-    (62) var -> . ID
-    (63) var -> . matel
-    (64) matel -> . ID [ expr , expr ]
-    {               shift and go to state 5
-    CONTINUE        shift and go to state 10
-    BREAK           shift and go to state 11
+    BREAK           shift and go to state 6
+    CONTINUE        shift and go to state 7
     PRINT           shift and go to state 14
     WHILE           shift and go to state 16
     FOR             shift and go to state 17
@@ -5302,16 +5265,81 @@ state 128
     ID              shift and go to state 18
 
     instruction                    shift and go to state 140
-    print_i                        shift and go to state 6
-    assign                         shift and go to state 7
-    while_l                        shift and go to state 8
-    for_l                          shift and go to state 9
+    print_i                        shift and go to state 8
+    assign                         shift and go to state 9
+    while_l                        shift and go to state 10
+    for_l                          shift and go to state 11
     return_i                       shift and go to state 12
     if_i                           shift and go to state 13
     var                            shift and go to state 15
     matel                          shift and go to state 21
 
-state 129
+state 130
+
+    (18) if_i -> IF ( error ) . instruction ELSE instruction
+    (19) if_i -> IF ( error ) . instruction
+    (6) instruction -> . { instructions }
+    (7) instruction -> . BREAK ;
+    (8) instruction -> . CONTINUE ;
+    (9) instruction -> . print_i ;
+    (10) instruction -> . assign ;
+    (11) instruction -> . while_l
+    (12) instruction -> . for_l
+    (13) instruction -> . return_i ;
+    (14) instruction -> . if_i
+    (32) print_i -> . PRINT error
+    (33) print_i -> . PRINT printargs
+    (65) assign -> . var DIVIDEASSIGN error
+    (66) assign -> . var MULTIPLYASSIGN error
+    (67) assign -> . var MINUSASSIGN error
+    (68) assign -> . var PLUSASSIGN error
+    (69) assign -> . var = error
+    (70) assign -> . var DIVIDEASSIGN expr
+    (71) assign -> . var MULTIPLYASSIGN expr
+    (72) assign -> . var MINUSASSIGN expr
+    (73) assign -> . var PLUSASSIGN expr
+    (74) assign -> . var = expr
+    (22) while_l -> . WHILE ( expr ) error
+    (23) while_l -> . WHILE ( error ) instruction
+    (24) while_l -> . WHILE ( expr ) instruction
+    (25) for_l -> . FOR ID = expr : expr error
+    (26) for_l -> . FOR ID = expr : error instruction
+    (27) for_l -> . FOR ID = error : expr instruction
+    (28) for_l -> . FOR ID = expr : expr instruction
+    (29) return_i -> . RETURN error
+    (30) return_i -> . RETURN expr
+    (31) return_i -> . RETURN
+    (15) if_i -> . IF ( expr ) instruction ELSE error
+    (16) if_i -> . IF ( expr ) error ELSE instruction
+    (17) if_i -> . IF ( expr ) error
+    (18) if_i -> . IF ( error ) instruction ELSE instruction
+    (19) if_i -> . IF ( error ) instruction
+    (20) if_i -> . IF ( expr ) instruction ELSE instruction
+    (21) if_i -> . IF ( expr ) instruction
+    (62) var -> . ID
+    (63) var -> . matel
+    (64) matel -> . ID [ mat_fun_args ]
+    {               shift and go to state 5
+    BREAK           shift and go to state 6
+    CONTINUE        shift and go to state 7
+    PRINT           shift and go to state 14
+    WHILE           shift and go to state 16
+    FOR             shift and go to state 17
+    RETURN          shift and go to state 19
+    IF              shift and go to state 20
+    ID              shift and go to state 18
+
+    instruction                    shift and go to state 142
+    print_i                        shift and go to state 8
+    assign                         shift and go to state 9
+    while_l                        shift and go to state 10
+    for_l                          shift and go to state 11
+    return_i                       shift and go to state 12
+    if_i                           shift and go to state 13
+    var                            shift and go to state 15
+    matel                          shift and go to state 21
+
+state 131
 
     (36) expr -> mat_fun ( error ) .
     ,               reduce using rule 36 (expr -> mat_fun ( error ) .)
@@ -5339,8 +5367,8 @@ state 129
     :               reduce using rule 36 (expr -> mat_fun ( error ) .)
     error           reduce using rule 36 (expr -> mat_fun ( error ) .)
     {               reduce using rule 36 (expr -> mat_fun ( error ) .)
-    CONTINUE        reduce using rule 36 (expr -> mat_fun ( error ) .)
     BREAK           reduce using rule 36 (expr -> mat_fun ( error ) .)
+    CONTINUE        reduce using rule 36 (expr -> mat_fun ( error ) .)
     PRINT           reduce using rule 36 (expr -> mat_fun ( error ) .)
     WHILE           reduce using rule 36 (expr -> mat_fun ( error ) .)
     FOR             reduce using rule 36 (expr -> mat_fun ( error ) .)
@@ -5349,45 +5377,45 @@ state 129
     ID              reduce using rule 36 (expr -> mat_fun ( error ) .)
 
 
-state 130
+state 132
 
-    (37) expr -> mat_fun ( expr ) .
-    ,               reduce using rule 37 (expr -> mat_fun ( expr ) .)
-    DOTMINUS        reduce using rule 37 (expr -> mat_fun ( expr ) .)
-    DOTPLUS         reduce using rule 37 (expr -> mat_fun ( expr ) .)
-    DOTDIVIDE       reduce using rule 37 (expr -> mat_fun ( expr ) .)
-    DOTMULTIPLY     reduce using rule 37 (expr -> mat_fun ( expr ) .)
-    OR              reduce using rule 37 (expr -> mat_fun ( expr ) .)
-    AND             reduce using rule 37 (expr -> mat_fun ( expr ) .)
-    XOR             reduce using rule 37 (expr -> mat_fun ( expr ) .)
-    GTE             reduce using rule 37 (expr -> mat_fun ( expr ) .)
-    LTE             reduce using rule 37 (expr -> mat_fun ( expr ) .)
-    GT              reduce using rule 37 (expr -> mat_fun ( expr ) .)
-    LT              reduce using rule 37 (expr -> mat_fun ( expr ) .)
-    NEQ             reduce using rule 37 (expr -> mat_fun ( expr ) .)
-    EQ              reduce using rule 37 (expr -> mat_fun ( expr ) .)
-    /               reduce using rule 37 (expr -> mat_fun ( expr ) .)
-    *               reduce using rule 37 (expr -> mat_fun ( expr ) .)
-    -               reduce using rule 37 (expr -> mat_fun ( expr ) .)
-    +               reduce using rule 37 (expr -> mat_fun ( expr ) .)
-    '               reduce using rule 37 (expr -> mat_fun ( expr ) .)
-    ;               reduce using rule 37 (expr -> mat_fun ( expr ) .)
-    )               reduce using rule 37 (expr -> mat_fun ( expr ) .)
-    ]               reduce using rule 37 (expr -> mat_fun ( expr ) .)
-    :               reduce using rule 37 (expr -> mat_fun ( expr ) .)
-    error           reduce using rule 37 (expr -> mat_fun ( expr ) .)
-    {               reduce using rule 37 (expr -> mat_fun ( expr ) .)
-    CONTINUE        reduce using rule 37 (expr -> mat_fun ( expr ) .)
-    BREAK           reduce using rule 37 (expr -> mat_fun ( expr ) .)
-    PRINT           reduce using rule 37 (expr -> mat_fun ( expr ) .)
-    WHILE           reduce using rule 37 (expr -> mat_fun ( expr ) .)
-    FOR             reduce using rule 37 (expr -> mat_fun ( expr ) .)
-    RETURN          reduce using rule 37 (expr -> mat_fun ( expr ) .)
-    IF              reduce using rule 37 (expr -> mat_fun ( expr ) .)
-    ID              reduce using rule 37 (expr -> mat_fun ( expr ) .)
+    (37) expr -> mat_fun ( mat_fun_args ) .
+    ,               reduce using rule 37 (expr -> mat_fun ( mat_fun_args ) .)
+    DOTMINUS        reduce using rule 37 (expr -> mat_fun ( mat_fun_args ) .)
+    DOTPLUS         reduce using rule 37 (expr -> mat_fun ( mat_fun_args ) .)
+    DOTDIVIDE       reduce using rule 37 (expr -> mat_fun ( mat_fun_args ) .)
+    DOTMULTIPLY     reduce using rule 37 (expr -> mat_fun ( mat_fun_args ) .)
+    OR              reduce using rule 37 (expr -> mat_fun ( mat_fun_args ) .)
+    AND             reduce using rule 37 (expr -> mat_fun ( mat_fun_args ) .)
+    XOR             reduce using rule 37 (expr -> mat_fun ( mat_fun_args ) .)
+    GTE             reduce using rule 37 (expr -> mat_fun ( mat_fun_args ) .)
+    LTE             reduce using rule 37 (expr -> mat_fun ( mat_fun_args ) .)
+    GT              reduce using rule 37 (expr -> mat_fun ( mat_fun_args ) .)
+    LT              reduce using rule 37 (expr -> mat_fun ( mat_fun_args ) .)
+    NEQ             reduce using rule 37 (expr -> mat_fun ( mat_fun_args ) .)
+    EQ              reduce using rule 37 (expr -> mat_fun ( mat_fun_args ) .)
+    /               reduce using rule 37 (expr -> mat_fun ( mat_fun_args ) .)
+    *               reduce using rule 37 (expr -> mat_fun ( mat_fun_args ) .)
+    -               reduce using rule 37 (expr -> mat_fun ( mat_fun_args ) .)
+    +               reduce using rule 37 (expr -> mat_fun ( mat_fun_args ) .)
+    '               reduce using rule 37 (expr -> mat_fun ( mat_fun_args ) .)
+    ;               reduce using rule 37 (expr -> mat_fun ( mat_fun_args ) .)
+    )               reduce using rule 37 (expr -> mat_fun ( mat_fun_args ) .)
+    ]               reduce using rule 37 (expr -> mat_fun ( mat_fun_args ) .)
+    :               reduce using rule 37 (expr -> mat_fun ( mat_fun_args ) .)
+    error           reduce using rule 37 (expr -> mat_fun ( mat_fun_args ) .)
+    {               reduce using rule 37 (expr -> mat_fun ( mat_fun_args ) .)
+    BREAK           reduce using rule 37 (expr -> mat_fun ( mat_fun_args ) .)
+    CONTINUE        reduce using rule 37 (expr -> mat_fun ( mat_fun_args ) .)
+    PRINT           reduce using rule 37 (expr -> mat_fun ( mat_fun_args ) .)
+    WHILE           reduce using rule 37 (expr -> mat_fun ( mat_fun_args ) .)
+    FOR             reduce using rule 37 (expr -> mat_fun ( mat_fun_args ) .)
+    RETURN          reduce using rule 37 (expr -> mat_fun ( mat_fun_args ) .)
+    IF              reduce using rule 37 (expr -> mat_fun ( mat_fun_args ) .)
+    ID              reduce using rule 37 (expr -> mat_fun ( mat_fun_args ) .)
 
 
-state 131
+state 133
 
     (80) variables -> variables , expr .
     (39) expr -> expr . DOTMINUS expr
@@ -5430,12 +5458,12 @@ state 131
     '               shift and go to state 76
 
 
-state 132
+state 134
 
     (22) while_l -> WHILE ( expr ) error .
     {               reduce using rule 22 (while_l -> WHILE ( expr ) error .)
-    CONTINUE        reduce using rule 22 (while_l -> WHILE ( expr ) error .)
     BREAK           reduce using rule 22 (while_l -> WHILE ( expr ) error .)
+    CONTINUE        reduce using rule 22 (while_l -> WHILE ( expr ) error .)
     PRINT           reduce using rule 22 (while_l -> WHILE ( expr ) error .)
     WHILE           reduce using rule 22 (while_l -> WHILE ( expr ) error .)
     FOR             reduce using rule 22 (while_l -> WHILE ( expr ) error .)
@@ -5447,12 +5475,12 @@ state 132
     ELSE            reduce using rule 22 (while_l -> WHILE ( expr ) error .)
 
 
-state 133
+state 135
 
     (24) while_l -> WHILE ( expr ) instruction .
     {               reduce using rule 24 (while_l -> WHILE ( expr ) instruction .)
-    CONTINUE        reduce using rule 24 (while_l -> WHILE ( expr ) instruction .)
     BREAK           reduce using rule 24 (while_l -> WHILE ( expr ) instruction .)
+    CONTINUE        reduce using rule 24 (while_l -> WHILE ( expr ) instruction .)
     PRINT           reduce using rule 24 (while_l -> WHILE ( expr ) instruction .)
     WHILE           reduce using rule 24 (while_l -> WHILE ( expr ) instruction .)
     FOR             reduce using rule 24 (while_l -> WHILE ( expr ) instruction .)
@@ -5464,12 +5492,12 @@ state 133
     ELSE            reduce using rule 24 (while_l -> WHILE ( expr ) instruction .)
 
 
-state 134
+state 136
 
     (23) while_l -> WHILE ( error ) instruction .
     {               reduce using rule 23 (while_l -> WHILE ( error ) instruction .)
-    CONTINUE        reduce using rule 23 (while_l -> WHILE ( error ) instruction .)
     BREAK           reduce using rule 23 (while_l -> WHILE ( error ) instruction .)
+    CONTINUE        reduce using rule 23 (while_l -> WHILE ( error ) instruction .)
     PRINT           reduce using rule 23 (while_l -> WHILE ( error ) instruction .)
     WHILE           reduce using rule 23 (while_l -> WHILE ( error ) instruction .)
     FOR             reduce using rule 23 (while_l -> WHILE ( error ) instruction .)
@@ -5481,13 +5509,13 @@ state 134
     ELSE            reduce using rule 23 (while_l -> WHILE ( error ) instruction .)
 
 
-state 135
+state 137
 
     (25) for_l -> FOR ID = expr : . expr error
     (26) for_l -> FOR ID = expr : . error instruction
     (28) for_l -> FOR ID = expr : . expr instruction
     (36) expr -> . mat_fun ( error )
-    (37) expr -> . mat_fun ( expr )
+    (37) expr -> . mat_fun ( mat_fun_args )
     (38) expr -> . vector
     (39) expr -> . expr DOTMINUS expr
     (40) expr -> . expr DOTPLUS expr
@@ -5512,75 +5540,17 @@ state 135
     (59) expr -> . FLOATNUM
     (60) expr -> . INTNUM
     (61) expr -> . STRING
-    (81) mat_fun -> . ONES
-    (82) mat_fun -> . EYE
-    (83) mat_fun -> . ZEROS
+    (83) mat_fun -> . ONES
+    (84) mat_fun -> . EYE
+    (85) mat_fun -> . ZEROS
     (78) vector -> . [ variables ]
     (75) unary -> . expr '
     (76) unary -> . NOT expr
     (77) unary -> . - expr
     (62) var -> . ID
     (63) var -> . matel
-    (64) matel -> . ID [ expr , expr ]
-    error           shift and go to state 142
-    (               shift and go to state 33
-    FLOATNUM        shift and go to state 38
-    INTNUM          shift and go to state 39
-    STRING          shift and go to state 40
-    ONES            shift and go to state 41
-    EYE             shift and go to state 42
-    ZEROS           shift and go to state 43
-    [               shift and go to state 44
-    NOT             shift and go to state 45
-    -               shift and go to state 35
-    ID              shift and go to state 18
-
-    expr                           shift and go to state 141
-    mat_fun                        shift and go to state 32
-    vector                         shift and go to state 34
-    unary                          shift and go to state 36
-    var                            shift and go to state 37
-    matel                          shift and go to state 21
-
-state 136
-
-    (27) for_l -> FOR ID = error : . expr instruction
-    (36) expr -> . mat_fun ( error )
-    (37) expr -> . mat_fun ( expr )
-    (38) expr -> . vector
-    (39) expr -> . expr DOTMINUS expr
-    (40) expr -> . expr DOTPLUS expr
-    (41) expr -> . expr DOTDIVIDE expr
-    (42) expr -> . expr DOTMULTIPLY expr
-    (43) expr -> . expr OR expr
-    (44) expr -> . expr AND expr
-    (45) expr -> . expr XOR expr
-    (46) expr -> . expr GTE expr
-    (47) expr -> . expr LTE expr
-    (48) expr -> . expr GT expr
-    (49) expr -> . expr LT expr
-    (50) expr -> . expr NEQ expr
-    (51) expr -> . expr EQ expr
-    (52) expr -> . expr / expr
-    (53) expr -> . expr * expr
-    (54) expr -> . expr - expr
-    (55) expr -> . expr + expr
-    (56) expr -> . unary
-    (57) expr -> . ( expr )
-    (58) expr -> . var
-    (59) expr -> . FLOATNUM
-    (60) expr -> . INTNUM
-    (61) expr -> . STRING
-    (81) mat_fun -> . ONES
-    (82) mat_fun -> . EYE
-    (83) mat_fun -> . ZEROS
-    (78) vector -> . [ variables ]
-    (75) unary -> . expr '
-    (76) unary -> . NOT expr
-    (77) unary -> . - expr
-    (62) var -> . ID
-    (63) var -> . matel
-    (64) matel -> . ID [ expr , expr ]
+    (64) matel -> . ID [ mat_fun_args ]
+    error           shift and go to state 144
     (               shift and go to state 33
     FLOATNUM        shift and go to state 38
     INTNUM          shift and go to state 39
@@ -5600,9 +5570,67 @@ state 136
     var                            shift and go to state 37
     matel                          shift and go to state 21
 
-state 137
+state 138
 
-    (64) matel -> ID [ expr , expr . ]
+    (27) for_l -> FOR ID = error : . expr instruction
+    (36) expr -> . mat_fun ( error )
+    (37) expr -> . mat_fun ( mat_fun_args )
+    (38) expr -> . vector
+    (39) expr -> . expr DOTMINUS expr
+    (40) expr -> . expr DOTPLUS expr
+    (41) expr -> . expr DOTDIVIDE expr
+    (42) expr -> . expr DOTMULTIPLY expr
+    (43) expr -> . expr OR expr
+    (44) expr -> . expr AND expr
+    (45) expr -> . expr XOR expr
+    (46) expr -> . expr GTE expr
+    (47) expr -> . expr LTE expr
+    (48) expr -> . expr GT expr
+    (49) expr -> . expr LT expr
+    (50) expr -> . expr NEQ expr
+    (51) expr -> . expr EQ expr
+    (52) expr -> . expr / expr
+    (53) expr -> . expr * expr
+    (54) expr -> . expr - expr
+    (55) expr -> . expr + expr
+    (56) expr -> . unary
+    (57) expr -> . ( expr )
+    (58) expr -> . var
+    (59) expr -> . FLOATNUM
+    (60) expr -> . INTNUM
+    (61) expr -> . STRING
+    (83) mat_fun -> . ONES
+    (84) mat_fun -> . EYE
+    (85) mat_fun -> . ZEROS
+    (78) vector -> . [ variables ]
+    (75) unary -> . expr '
+    (76) unary -> . NOT expr
+    (77) unary -> . - expr
+    (62) var -> . ID
+    (63) var -> . matel
+    (64) matel -> . ID [ mat_fun_args ]
+    (               shift and go to state 33
+    FLOATNUM        shift and go to state 38
+    INTNUM          shift and go to state 39
+    STRING          shift and go to state 40
+    ONES            shift and go to state 41
+    EYE             shift and go to state 42
+    ZEROS           shift and go to state 43
+    [               shift and go to state 44
+    NOT             shift and go to state 45
+    -               shift and go to state 35
+    ID              shift and go to state 18
+
+    expr                           shift and go to state 145
+    mat_fun                        shift and go to state 32
+    vector                         shift and go to state 34
+    unary                          shift and go to state 36
+    var                            shift and go to state 37
+    matel                          shift and go to state 21
+
+state 139
+
+    (82) mat_fun_args -> mat_fun_args , expr .
     (39) expr -> expr . DOTMINUS expr
     (40) expr -> expr . DOTPLUS expr
     (41) expr -> expr . DOTDIVIDE expr
@@ -5621,7 +5649,9 @@ state 137
     (54) expr -> expr . - expr
     (55) expr -> expr . + expr
     (75) unary -> expr . '
-    ]               shift and go to state 144
+    ]               reduce using rule 82 (mat_fun_args -> mat_fun_args , expr .)
+    ,               reduce using rule 82 (mat_fun_args -> mat_fun_args , expr .)
+    )               reduce using rule 82 (mat_fun_args -> mat_fun_args , expr .)
     DOTMINUS        shift and go to state 59
     DOTPLUS         shift and go to state 60
     DOTDIVIDE       shift and go to state 61
@@ -5642,15 +5672,15 @@ state 137
     '               shift and go to state 76
 
 
-state 138
+state 140
 
     (15) if_i -> IF ( expr ) instruction . ELSE error
     (20) if_i -> IF ( expr ) instruction . ELSE instruction
     (21) if_i -> IF ( expr ) instruction .
-    ELSE            shift and go to state 145
+    ELSE            shift and go to state 146
     {               reduce using rule 21 (if_i -> IF ( expr ) instruction .)
-    CONTINUE        reduce using rule 21 (if_i -> IF ( expr ) instruction .)
     BREAK           reduce using rule 21 (if_i -> IF ( expr ) instruction .)
+    CONTINUE        reduce using rule 21 (if_i -> IF ( expr ) instruction .)
     PRINT           reduce using rule 21 (if_i -> IF ( expr ) instruction .)
     WHILE           reduce using rule 21 (if_i -> IF ( expr ) instruction .)
     FOR             reduce using rule 21 (if_i -> IF ( expr ) instruction .)
@@ -5661,14 +5691,14 @@ state 138
     }               reduce using rule 21 (if_i -> IF ( expr ) instruction .)
 
 
-state 139
+state 141
 
     (16) if_i -> IF ( expr ) error . ELSE instruction
     (17) if_i -> IF ( expr ) error .
-    ELSE            shift and go to state 146
+    ELSE            shift and go to state 147
     {               reduce using rule 17 (if_i -> IF ( expr ) error .)
-    CONTINUE        reduce using rule 17 (if_i -> IF ( expr ) error .)
     BREAK           reduce using rule 17 (if_i -> IF ( expr ) error .)
+    CONTINUE        reduce using rule 17 (if_i -> IF ( expr ) error .)
     PRINT           reduce using rule 17 (if_i -> IF ( expr ) error .)
     WHILE           reduce using rule 17 (if_i -> IF ( expr ) error .)
     FOR             reduce using rule 17 (if_i -> IF ( expr ) error .)
@@ -5679,14 +5709,14 @@ state 139
     }               reduce using rule 17 (if_i -> IF ( expr ) error .)
 
 
-state 140
+state 142
 
     (18) if_i -> IF ( error ) instruction . ELSE instruction
     (19) if_i -> IF ( error ) instruction .
-    ELSE            shift and go to state 147
+    ELSE            shift and go to state 148
     {               reduce using rule 19 (if_i -> IF ( error ) instruction .)
-    CONTINUE        reduce using rule 19 (if_i -> IF ( error ) instruction .)
     BREAK           reduce using rule 19 (if_i -> IF ( error ) instruction .)
+    CONTINUE        reduce using rule 19 (if_i -> IF ( error ) instruction .)
     PRINT           reduce using rule 19 (if_i -> IF ( error ) instruction .)
     WHILE           reduce using rule 19 (if_i -> IF ( error ) instruction .)
     FOR             reduce using rule 19 (if_i -> IF ( error ) instruction .)
@@ -5697,7 +5727,7 @@ state 140
     }               reduce using rule 19 (if_i -> IF ( error ) instruction .)
 
 
-state 141
+state 143
 
     (25) for_l -> FOR ID = expr : expr . error
     (28) for_l -> FOR ID = expr : expr . instruction
@@ -5720,12 +5750,12 @@ state 141
     (55) expr -> expr . + expr
     (75) unary -> expr . '
     (6) instruction -> . { instructions }
-    (7) instruction -> . print_i ;
-    (8) instruction -> . assign ;
-    (9) instruction -> . while_l
-    (10) instruction -> . for_l
-    (11) instruction -> . CONTINUE ;
-    (12) instruction -> . BREAK ;
+    (7) instruction -> . BREAK ;
+    (8) instruction -> . CONTINUE ;
+    (9) instruction -> . print_i ;
+    (10) instruction -> . assign ;
+    (11) instruction -> . while_l
+    (12) instruction -> . for_l
     (13) instruction -> . return_i ;
     (14) instruction -> . if_i
     (32) print_i -> . PRINT error
@@ -5759,8 +5789,8 @@ state 141
     (21) if_i -> . IF ( expr ) instruction
     (62) var -> . ID
     (63) var -> . matel
-    (64) matel -> . ID [ expr , expr ]
-    error           shift and go to state 148
+    (64) matel -> . ID [ mat_fun_args ]
+    error           shift and go to state 149
     DOTMINUS        shift and go to state 59
     DOTPLUS         shift and go to state 60
     DOTDIVIDE       shift and go to state 61
@@ -5780,8 +5810,8 @@ state 141
     +               shift and go to state 75
     '               shift and go to state 76
     {               shift and go to state 5
-    CONTINUE        shift and go to state 10
-    BREAK           shift and go to state 11
+    BREAK           shift and go to state 6
+    CONTINUE        shift and go to state 7
     PRINT           shift and go to state 14
     WHILE           shift and go to state 16
     FOR             shift and go to state 17
@@ -5789,26 +5819,26 @@ state 141
     IF              shift and go to state 20
     ID              shift and go to state 18
 
-    instruction                    shift and go to state 149
-    print_i                        shift and go to state 6
-    assign                         shift and go to state 7
-    while_l                        shift and go to state 8
-    for_l                          shift and go to state 9
+    instruction                    shift and go to state 150
+    print_i                        shift and go to state 8
+    assign                         shift and go to state 9
+    while_l                        shift and go to state 10
+    for_l                          shift and go to state 11
     return_i                       shift and go to state 12
     if_i                           shift and go to state 13
     var                            shift and go to state 15
     matel                          shift and go to state 21
 
-state 142
+state 144
 
     (26) for_l -> FOR ID = expr : error . instruction
     (6) instruction -> . { instructions }
-    (7) instruction -> . print_i ;
-    (8) instruction -> . assign ;
-    (9) instruction -> . while_l
-    (10) instruction -> . for_l
-    (11) instruction -> . CONTINUE ;
-    (12) instruction -> . BREAK ;
+    (7) instruction -> . BREAK ;
+    (8) instruction -> . CONTINUE ;
+    (9) instruction -> . print_i ;
+    (10) instruction -> . assign ;
+    (11) instruction -> . while_l
+    (12) instruction -> . for_l
     (13) instruction -> . return_i ;
     (14) instruction -> . if_i
     (32) print_i -> . PRINT error
@@ -5842,10 +5872,10 @@ state 142
     (21) if_i -> . IF ( expr ) instruction
     (62) var -> . ID
     (63) var -> . matel
-    (64) matel -> . ID [ expr , expr ]
+    (64) matel -> . ID [ mat_fun_args ]
     {               shift and go to state 5
-    CONTINUE        shift and go to state 10
-    BREAK           shift and go to state 11
+    BREAK           shift and go to state 6
+    CONTINUE        shift and go to state 7
     PRINT           shift and go to state 14
     WHILE           shift and go to state 16
     FOR             shift and go to state 17
@@ -5853,17 +5883,17 @@ state 142
     IF              shift and go to state 20
     ID              shift and go to state 18
 
-    instruction                    shift and go to state 150
-    print_i                        shift and go to state 6
-    assign                         shift and go to state 7
-    while_l                        shift and go to state 8
-    for_l                          shift and go to state 9
+    instruction                    shift and go to state 151
+    print_i                        shift and go to state 8
+    assign                         shift and go to state 9
+    while_l                        shift and go to state 10
+    for_l                          shift and go to state 11
     return_i                       shift and go to state 12
     if_i                           shift and go to state 13
     var                            shift and go to state 15
     matel                          shift and go to state 21
 
-state 143
+state 145
 
     (27) for_l -> FOR ID = error : expr . instruction
     (39) expr -> expr . DOTMINUS expr
@@ -5885,12 +5915,12 @@ state 143
     (55) expr -> expr . + expr
     (75) unary -> expr . '
     (6) instruction -> . { instructions }
-    (7) instruction -> . print_i ;
-    (8) instruction -> . assign ;
-    (9) instruction -> . while_l
-    (10) instruction -> . for_l
-    (11) instruction -> . CONTINUE ;
-    (12) instruction -> . BREAK ;
+    (7) instruction -> . BREAK ;
+    (8) instruction -> . CONTINUE ;
+    (9) instruction -> . print_i ;
+    (10) instruction -> . assign ;
+    (11) instruction -> . while_l
+    (12) instruction -> . for_l
     (13) instruction -> . return_i ;
     (14) instruction -> . if_i
     (32) print_i -> . PRINT error
@@ -5924,7 +5954,7 @@ state 143
     (21) if_i -> . IF ( expr ) instruction
     (62) var -> . ID
     (63) var -> . matel
-    (64) matel -> . ID [ expr , expr ]
+    (64) matel -> . ID [ mat_fun_args ]
     DOTMINUS        shift and go to state 59
     DOTPLUS         shift and go to state 60
     DOTDIVIDE       shift and go to state 61
@@ -5944,117 +5974,8 @@ state 143
     +               shift and go to state 75
     '               shift and go to state 76
     {               shift and go to state 5
-    CONTINUE        shift and go to state 10
-    BREAK           shift and go to state 11
-    PRINT           shift and go to state 14
-    WHILE           shift and go to state 16
-    FOR             shift and go to state 17
-    RETURN          shift and go to state 19
-    IF              shift and go to state 20
-    ID              shift and go to state 18
-
-    instruction                    shift and go to state 151
-    print_i                        shift and go to state 6
-    assign                         shift and go to state 7
-    while_l                        shift and go to state 8
-    for_l                          shift and go to state 9
-    return_i                       shift and go to state 12
-    if_i                           shift and go to state 13
-    var                            shift and go to state 15
-    matel                          shift and go to state 21
-
-state 144
-
-    (64) matel -> ID [ expr , expr ] .
-    DIVIDEASSIGN    reduce using rule 64 (matel -> ID [ expr , expr ] .)
-    MULTIPLYASSIGN  reduce using rule 64 (matel -> ID [ expr , expr ] .)
-    MINUSASSIGN     reduce using rule 64 (matel -> ID [ expr , expr ] .)
-    PLUSASSIGN      reduce using rule 64 (matel -> ID [ expr , expr ] .)
-    =               reduce using rule 64 (matel -> ID [ expr , expr ] .)
-    ,               reduce using rule 64 (matel -> ID [ expr , expr ] .)
-    DOTMINUS        reduce using rule 64 (matel -> ID [ expr , expr ] .)
-    DOTPLUS         reduce using rule 64 (matel -> ID [ expr , expr ] .)
-    DOTDIVIDE       reduce using rule 64 (matel -> ID [ expr , expr ] .)
-    DOTMULTIPLY     reduce using rule 64 (matel -> ID [ expr , expr ] .)
-    OR              reduce using rule 64 (matel -> ID [ expr , expr ] .)
-    AND             reduce using rule 64 (matel -> ID [ expr , expr ] .)
-    XOR             reduce using rule 64 (matel -> ID [ expr , expr ] .)
-    GTE             reduce using rule 64 (matel -> ID [ expr , expr ] .)
-    LTE             reduce using rule 64 (matel -> ID [ expr , expr ] .)
-    GT              reduce using rule 64 (matel -> ID [ expr , expr ] .)
-    LT              reduce using rule 64 (matel -> ID [ expr , expr ] .)
-    NEQ             reduce using rule 64 (matel -> ID [ expr , expr ] .)
-    EQ              reduce using rule 64 (matel -> ID [ expr , expr ] .)
-    /               reduce using rule 64 (matel -> ID [ expr , expr ] .)
-    *               reduce using rule 64 (matel -> ID [ expr , expr ] .)
-    -               reduce using rule 64 (matel -> ID [ expr , expr ] .)
-    +               reduce using rule 64 (matel -> ID [ expr , expr ] .)
-    '               reduce using rule 64 (matel -> ID [ expr , expr ] .)
-    ;               reduce using rule 64 (matel -> ID [ expr , expr ] .)
-    )               reduce using rule 64 (matel -> ID [ expr , expr ] .)
-    ]               reduce using rule 64 (matel -> ID [ expr , expr ] .)
-    :               reduce using rule 64 (matel -> ID [ expr , expr ] .)
-    error           reduce using rule 64 (matel -> ID [ expr , expr ] .)
-    {               reduce using rule 64 (matel -> ID [ expr , expr ] .)
-    CONTINUE        reduce using rule 64 (matel -> ID [ expr , expr ] .)
-    BREAK           reduce using rule 64 (matel -> ID [ expr , expr ] .)
-    PRINT           reduce using rule 64 (matel -> ID [ expr , expr ] .)
-    WHILE           reduce using rule 64 (matel -> ID [ expr , expr ] .)
-    FOR             reduce using rule 64 (matel -> ID [ expr , expr ] .)
-    RETURN          reduce using rule 64 (matel -> ID [ expr , expr ] .)
-    IF              reduce using rule 64 (matel -> ID [ expr , expr ] .)
-    ID              reduce using rule 64 (matel -> ID [ expr , expr ] .)
-
-
-state 145
-
-    (15) if_i -> IF ( expr ) instruction ELSE . error
-    (20) if_i -> IF ( expr ) instruction ELSE . instruction
-    (6) instruction -> . { instructions }
-    (7) instruction -> . print_i ;
-    (8) instruction -> . assign ;
-    (9) instruction -> . while_l
-    (10) instruction -> . for_l
-    (11) instruction -> . CONTINUE ;
-    (12) instruction -> . BREAK ;
-    (13) instruction -> . return_i ;
-    (14) instruction -> . if_i
-    (32) print_i -> . PRINT error
-    (33) print_i -> . PRINT printargs
-    (65) assign -> . var DIVIDEASSIGN error
-    (66) assign -> . var MULTIPLYASSIGN error
-    (67) assign -> . var MINUSASSIGN error
-    (68) assign -> . var PLUSASSIGN error
-    (69) assign -> . var = error
-    (70) assign -> . var DIVIDEASSIGN expr
-    (71) assign -> . var MULTIPLYASSIGN expr
-    (72) assign -> . var MINUSASSIGN expr
-    (73) assign -> . var PLUSASSIGN expr
-    (74) assign -> . var = expr
-    (22) while_l -> . WHILE ( expr ) error
-    (23) while_l -> . WHILE ( error ) instruction
-    (24) while_l -> . WHILE ( expr ) instruction
-    (25) for_l -> . FOR ID = expr : expr error
-    (26) for_l -> . FOR ID = expr : error instruction
-    (27) for_l -> . FOR ID = error : expr instruction
-    (28) for_l -> . FOR ID = expr : expr instruction
-    (29) return_i -> . RETURN error
-    (30) return_i -> . RETURN expr
-    (31) return_i -> . RETURN
-    (15) if_i -> . IF ( expr ) instruction ELSE error
-    (16) if_i -> . IF ( expr ) error ELSE instruction
-    (17) if_i -> . IF ( expr ) error
-    (18) if_i -> . IF ( error ) instruction ELSE instruction
-    (19) if_i -> . IF ( error ) instruction
-    (20) if_i -> . IF ( expr ) instruction ELSE instruction
-    (21) if_i -> . IF ( expr ) instruction
-    (62) var -> . ID
-    (63) var -> . matel
-    (64) matel -> . ID [ expr , expr ]
-    error           shift and go to state 153
-    {               shift and go to state 5
-    CONTINUE        shift and go to state 10
-    BREAK           shift and go to state 11
+    BREAK           shift and go to state 6
+    CONTINUE        shift and go to state 7
     PRINT           shift and go to state 14
     WHILE           shift and go to state 16
     FOR             shift and go to state 17
@@ -6063,10 +5984,10 @@ state 145
     ID              shift and go to state 18
 
     instruction                    shift and go to state 152
-    print_i                        shift and go to state 6
-    assign                         shift and go to state 7
-    while_l                        shift and go to state 8
-    for_l                          shift and go to state 9
+    print_i                        shift and go to state 8
+    assign                         shift and go to state 9
+    while_l                        shift and go to state 10
+    for_l                          shift and go to state 11
     return_i                       shift and go to state 12
     if_i                           shift and go to state 13
     var                            shift and go to state 15
@@ -6074,14 +5995,15 @@ state 145
 
 state 146
 
-    (16) if_i -> IF ( expr ) error ELSE . instruction
+    (15) if_i -> IF ( expr ) instruction ELSE . error
+    (20) if_i -> IF ( expr ) instruction ELSE . instruction
     (6) instruction -> . { instructions }
-    (7) instruction -> . print_i ;
-    (8) instruction -> . assign ;
-    (9) instruction -> . while_l
-    (10) instruction -> . for_l
-    (11) instruction -> . CONTINUE ;
-    (12) instruction -> . BREAK ;
+    (7) instruction -> . BREAK ;
+    (8) instruction -> . CONTINUE ;
+    (9) instruction -> . print_i ;
+    (10) instruction -> . assign ;
+    (11) instruction -> . while_l
+    (12) instruction -> . for_l
     (13) instruction -> . return_i ;
     (14) instruction -> . if_i
     (32) print_i -> . PRINT error
@@ -6115,10 +6037,11 @@ state 146
     (21) if_i -> . IF ( expr ) instruction
     (62) var -> . ID
     (63) var -> . matel
-    (64) matel -> . ID [ expr , expr ]
+    (64) matel -> . ID [ mat_fun_args ]
+    error           shift and go to state 154
     {               shift and go to state 5
-    CONTINUE        shift and go to state 10
-    BREAK           shift and go to state 11
+    BREAK           shift and go to state 6
+    CONTINUE        shift and go to state 7
     PRINT           shift and go to state 14
     WHILE           shift and go to state 16
     FOR             shift and go to state 17
@@ -6126,11 +6049,11 @@ state 146
     IF              shift and go to state 20
     ID              shift and go to state 18
 
-    instruction                    shift and go to state 154
-    print_i                        shift and go to state 6
-    assign                         shift and go to state 7
-    while_l                        shift and go to state 8
-    for_l                          shift and go to state 9
+    instruction                    shift and go to state 153
+    print_i                        shift and go to state 8
+    assign                         shift and go to state 9
+    while_l                        shift and go to state 10
+    for_l                          shift and go to state 11
     return_i                       shift and go to state 12
     if_i                           shift and go to state 13
     var                            shift and go to state 15
@@ -6138,14 +6061,14 @@ state 146
 
 state 147
 
-    (18) if_i -> IF ( error ) instruction ELSE . instruction
+    (16) if_i -> IF ( expr ) error ELSE . instruction
     (6) instruction -> . { instructions }
-    (7) instruction -> . print_i ;
-    (8) instruction -> . assign ;
-    (9) instruction -> . while_l
-    (10) instruction -> . for_l
-    (11) instruction -> . CONTINUE ;
-    (12) instruction -> . BREAK ;
+    (7) instruction -> . BREAK ;
+    (8) instruction -> . CONTINUE ;
+    (9) instruction -> . print_i ;
+    (10) instruction -> . assign ;
+    (11) instruction -> . while_l
+    (12) instruction -> . for_l
     (13) instruction -> . return_i ;
     (14) instruction -> . if_i
     (32) print_i -> . PRINT error
@@ -6179,10 +6102,10 @@ state 147
     (21) if_i -> . IF ( expr ) instruction
     (62) var -> . ID
     (63) var -> . matel
-    (64) matel -> . ID [ expr , expr ]
+    (64) matel -> . ID [ mat_fun_args ]
     {               shift and go to state 5
-    CONTINUE        shift and go to state 10
-    BREAK           shift and go to state 11
+    BREAK           shift and go to state 6
+    CONTINUE        shift and go to state 7
     PRINT           shift and go to state 14
     WHILE           shift and go to state 16
     FOR             shift and go to state 17
@@ -6191,10 +6114,10 @@ state 147
     ID              shift and go to state 18
 
     instruction                    shift and go to state 155
-    print_i                        shift and go to state 6
-    assign                         shift and go to state 7
-    while_l                        shift and go to state 8
-    for_l                          shift and go to state 9
+    print_i                        shift and go to state 8
+    assign                         shift and go to state 9
+    while_l                        shift and go to state 10
+    for_l                          shift and go to state 11
     return_i                       shift and go to state 12
     if_i                           shift and go to state 13
     var                            shift and go to state 15
@@ -6202,10 +6125,74 @@ state 147
 
 state 148
 
+    (18) if_i -> IF ( error ) instruction ELSE . instruction
+    (6) instruction -> . { instructions }
+    (7) instruction -> . BREAK ;
+    (8) instruction -> . CONTINUE ;
+    (9) instruction -> . print_i ;
+    (10) instruction -> . assign ;
+    (11) instruction -> . while_l
+    (12) instruction -> . for_l
+    (13) instruction -> . return_i ;
+    (14) instruction -> . if_i
+    (32) print_i -> . PRINT error
+    (33) print_i -> . PRINT printargs
+    (65) assign -> . var DIVIDEASSIGN error
+    (66) assign -> . var MULTIPLYASSIGN error
+    (67) assign -> . var MINUSASSIGN error
+    (68) assign -> . var PLUSASSIGN error
+    (69) assign -> . var = error
+    (70) assign -> . var DIVIDEASSIGN expr
+    (71) assign -> . var MULTIPLYASSIGN expr
+    (72) assign -> . var MINUSASSIGN expr
+    (73) assign -> . var PLUSASSIGN expr
+    (74) assign -> . var = expr
+    (22) while_l -> . WHILE ( expr ) error
+    (23) while_l -> . WHILE ( error ) instruction
+    (24) while_l -> . WHILE ( expr ) instruction
+    (25) for_l -> . FOR ID = expr : expr error
+    (26) for_l -> . FOR ID = expr : error instruction
+    (27) for_l -> . FOR ID = error : expr instruction
+    (28) for_l -> . FOR ID = expr : expr instruction
+    (29) return_i -> . RETURN error
+    (30) return_i -> . RETURN expr
+    (31) return_i -> . RETURN
+    (15) if_i -> . IF ( expr ) instruction ELSE error
+    (16) if_i -> . IF ( expr ) error ELSE instruction
+    (17) if_i -> . IF ( expr ) error
+    (18) if_i -> . IF ( error ) instruction ELSE instruction
+    (19) if_i -> . IF ( error ) instruction
+    (20) if_i -> . IF ( expr ) instruction ELSE instruction
+    (21) if_i -> . IF ( expr ) instruction
+    (62) var -> . ID
+    (63) var -> . matel
+    (64) matel -> . ID [ mat_fun_args ]
+    {               shift and go to state 5
+    BREAK           shift and go to state 6
+    CONTINUE        shift and go to state 7
+    PRINT           shift and go to state 14
+    WHILE           shift and go to state 16
+    FOR             shift and go to state 17
+    RETURN          shift and go to state 19
+    IF              shift and go to state 20
+    ID              shift and go to state 18
+
+    instruction                    shift and go to state 156
+    print_i                        shift and go to state 8
+    assign                         shift and go to state 9
+    while_l                        shift and go to state 10
+    for_l                          shift and go to state 11
+    return_i                       shift and go to state 12
+    if_i                           shift and go to state 13
+    var                            shift and go to state 15
+    matel                          shift and go to state 21
+
+state 149
+
     (25) for_l -> FOR ID = expr : expr error .
     {               reduce using rule 25 (for_l -> FOR ID = expr : expr error .)
-    CONTINUE        reduce using rule 25 (for_l -> FOR ID = expr : expr error .)
     BREAK           reduce using rule 25 (for_l -> FOR ID = expr : expr error .)
+    CONTINUE        reduce using rule 25 (for_l -> FOR ID = expr : expr error .)
     PRINT           reduce using rule 25 (for_l -> FOR ID = expr : expr error .)
     WHILE           reduce using rule 25 (for_l -> FOR ID = expr : expr error .)
     FOR             reduce using rule 25 (for_l -> FOR ID = expr : expr error .)
@@ -6217,12 +6204,12 @@ state 148
     ELSE            reduce using rule 25 (for_l -> FOR ID = expr : expr error .)
 
 
-state 149
+state 150
 
     (28) for_l -> FOR ID = expr : expr instruction .
     {               reduce using rule 28 (for_l -> FOR ID = expr : expr instruction .)
-    CONTINUE        reduce using rule 28 (for_l -> FOR ID = expr : expr instruction .)
     BREAK           reduce using rule 28 (for_l -> FOR ID = expr : expr instruction .)
+    CONTINUE        reduce using rule 28 (for_l -> FOR ID = expr : expr instruction .)
     PRINT           reduce using rule 28 (for_l -> FOR ID = expr : expr instruction .)
     WHILE           reduce using rule 28 (for_l -> FOR ID = expr : expr instruction .)
     FOR             reduce using rule 28 (for_l -> FOR ID = expr : expr instruction .)
@@ -6234,12 +6221,12 @@ state 149
     ELSE            reduce using rule 28 (for_l -> FOR ID = expr : expr instruction .)
 
 
-state 150
+state 151
 
     (26) for_l -> FOR ID = expr : error instruction .
     {               reduce using rule 26 (for_l -> FOR ID = expr : error instruction .)
-    CONTINUE        reduce using rule 26 (for_l -> FOR ID = expr : error instruction .)
     BREAK           reduce using rule 26 (for_l -> FOR ID = expr : error instruction .)
+    CONTINUE        reduce using rule 26 (for_l -> FOR ID = expr : error instruction .)
     PRINT           reduce using rule 26 (for_l -> FOR ID = expr : error instruction .)
     WHILE           reduce using rule 26 (for_l -> FOR ID = expr : error instruction .)
     FOR             reduce using rule 26 (for_l -> FOR ID = expr : error instruction .)
@@ -6251,12 +6238,12 @@ state 150
     ELSE            reduce using rule 26 (for_l -> FOR ID = expr : error instruction .)
 
 
-state 151
+state 152
 
     (27) for_l -> FOR ID = error : expr instruction .
     {               reduce using rule 27 (for_l -> FOR ID = error : expr instruction .)
-    CONTINUE        reduce using rule 27 (for_l -> FOR ID = error : expr instruction .)
     BREAK           reduce using rule 27 (for_l -> FOR ID = error : expr instruction .)
+    CONTINUE        reduce using rule 27 (for_l -> FOR ID = error : expr instruction .)
     PRINT           reduce using rule 27 (for_l -> FOR ID = error : expr instruction .)
     WHILE           reduce using rule 27 (for_l -> FOR ID = error : expr instruction .)
     FOR             reduce using rule 27 (for_l -> FOR ID = error : expr instruction .)
@@ -6268,12 +6255,12 @@ state 151
     ELSE            reduce using rule 27 (for_l -> FOR ID = error : expr instruction .)
 
 
-state 152
+state 153
 
     (20) if_i -> IF ( expr ) instruction ELSE instruction .
     {               reduce using rule 20 (if_i -> IF ( expr ) instruction ELSE instruction .)
-    CONTINUE        reduce using rule 20 (if_i -> IF ( expr ) instruction ELSE instruction .)
     BREAK           reduce using rule 20 (if_i -> IF ( expr ) instruction ELSE instruction .)
+    CONTINUE        reduce using rule 20 (if_i -> IF ( expr ) instruction ELSE instruction .)
     PRINT           reduce using rule 20 (if_i -> IF ( expr ) instruction ELSE instruction .)
     WHILE           reduce using rule 20 (if_i -> IF ( expr ) instruction ELSE instruction .)
     FOR             reduce using rule 20 (if_i -> IF ( expr ) instruction ELSE instruction .)
@@ -6285,12 +6272,12 @@ state 152
     ELSE            reduce using rule 20 (if_i -> IF ( expr ) instruction ELSE instruction .)
 
 
-state 153
+state 154
 
     (15) if_i -> IF ( expr ) instruction ELSE error .
     {               reduce using rule 15 (if_i -> IF ( expr ) instruction ELSE error .)
-    CONTINUE        reduce using rule 15 (if_i -> IF ( expr ) instruction ELSE error .)
     BREAK           reduce using rule 15 (if_i -> IF ( expr ) instruction ELSE error .)
+    CONTINUE        reduce using rule 15 (if_i -> IF ( expr ) instruction ELSE error .)
     PRINT           reduce using rule 15 (if_i -> IF ( expr ) instruction ELSE error .)
     WHILE           reduce using rule 15 (if_i -> IF ( expr ) instruction ELSE error .)
     FOR             reduce using rule 15 (if_i -> IF ( expr ) instruction ELSE error .)
@@ -6302,12 +6289,12 @@ state 153
     ELSE            reduce using rule 15 (if_i -> IF ( expr ) instruction ELSE error .)
 
 
-state 154
+state 155
 
     (16) if_i -> IF ( expr ) error ELSE instruction .
     {               reduce using rule 16 (if_i -> IF ( expr ) error ELSE instruction .)
-    CONTINUE        reduce using rule 16 (if_i -> IF ( expr ) error ELSE instruction .)
     BREAK           reduce using rule 16 (if_i -> IF ( expr ) error ELSE instruction .)
+    CONTINUE        reduce using rule 16 (if_i -> IF ( expr ) error ELSE instruction .)
     PRINT           reduce using rule 16 (if_i -> IF ( expr ) error ELSE instruction .)
     WHILE           reduce using rule 16 (if_i -> IF ( expr ) error ELSE instruction .)
     FOR             reduce using rule 16 (if_i -> IF ( expr ) error ELSE instruction .)
@@ -6319,12 +6306,12 @@ state 154
     ELSE            reduce using rule 16 (if_i -> IF ( expr ) error ELSE instruction .)
 
 
-state 155
+state 156
 
     (18) if_i -> IF ( error ) instruction ELSE instruction .
     {               reduce using rule 18 (if_i -> IF ( error ) instruction ELSE instruction .)
-    CONTINUE        reduce using rule 18 (if_i -> IF ( error ) instruction ELSE instruction .)
     BREAK           reduce using rule 18 (if_i -> IF ( error ) instruction ELSE instruction .)
+    CONTINUE        reduce using rule 18 (if_i -> IF ( error ) instruction ELSE instruction .)
     PRINT           reduce using rule 18 (if_i -> IF ( error ) instruction ELSE instruction .)
     WHILE           reduce using rule 18 (if_i -> IF ( error ) instruction ELSE instruction .)
     FOR             reduce using rule 18 (if_i -> IF ( error ) instruction ELSE instruction .)

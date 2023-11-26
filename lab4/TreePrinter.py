@@ -201,4 +201,6 @@ class TreePrinter:
         self.print_indent(i)
         print(self.func)
         # print(self.expr)
-        self.expr.printTree(i+1)
+        for el in self.dims:
+            el.printTree(i+1)
+        # self.expr.printTree(i+1)

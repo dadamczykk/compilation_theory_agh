@@ -5,6 +5,8 @@ M = 20;
 for i = 1:N {
     for j = i:M {
         print i, j;
+        print j, k;
+        print x, g;
     }
 }
 
