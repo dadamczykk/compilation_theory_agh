@@ -154,8 +154,8 @@ class Vector(Node):
         self.dims = [len(vector)]
         self.v_type = None
 
-        print(vector)
-        print(type(vector[0]))
+        # print(vector)
+        # print(type(vector[0]))
 
         if isinstance(vector[0], Vector):
             self.dims += vector[0].dims

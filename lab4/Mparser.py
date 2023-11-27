@@ -169,7 +169,7 @@ class MatrixParser(Parser):
        'var MULTIPLYASSIGN expr',
        'var DIVIDEASSIGN expr')
     def assign(self, p):
-        return AST.AssignOp(p[0], p[1], p[2], p.lineno)
+        return AST.AssignOp(p[0],p[1], p[2], p.lineno)
 
     @_('var "=" error',
        'var PLUSASSIGN error',

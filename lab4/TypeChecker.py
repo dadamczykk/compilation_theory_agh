@@ -2,70 +2,97 @@ from collections import defaultdict
 import AST
 from SymbolTable import SymbolTable, VariableSymbol
 
-super_huge_dict = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: "")))
+dict_of_types = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: "")))
 
-super_huge_dict["+"]["int"]["int"] = "int"
-super_huge_dict["+"]["int"]["float"] = "float"
-super_huge_dict["+"]["float"]["int"] = "float"
-super_huge_dict["+"]["float"]["float"] = "float"
-super_huge_dict["+"]["str"]["str"] = "str"
-super_huge_dict["+"]["vector"]["vector"] = "vector"
+dict_of_types["+"]["int"]["int"] = "int"
+dict_of_types["+"]["int"]["float"] = "float"
+dict_of_types["+"]["float"]["int"] = "float"
+dict_of_types["+"]["float"]["float"] = "float"
+dict_of_types["+"]["str"]["str"] = "str"
+dict_of_types["+"]["vector"]["vector"] = "vector"
 
-super_huge_dict["-"]["int"]["int"] = "int"
-super_huge_dict["-"]["int"]["float"] = "float"
-super_huge_dict["-"]["float"]["int"] = "float"
-super_huge_dict["-"]["float"]["float"] = "float"
-super_huge_dict["-"]["str"]["str"] = "str"
-super_huge_dict["-"]["vector"]["vector"] = "vector"
+dict_of_types["-"]["int"]["int"] = "int"
+dict_of_types["-"]["int"]["float"] = "float"
+dict_of_types["-"]["float"]["int"] = "float"
+dict_of_types["-"]["float"]["float"] = "float"
+dict_of_types["-"]["str"]["str"] = "str"
+dict_of_types["-"]["vector"]["vector"] = "vector"
 
-super_huge_dict["*"]["int"]["int"] = "int"
-super_huge_dict["*"]["int"]["float"] = "float"
-super_huge_dict["*"]["float"]["int"] = "float"
-super_huge_dict["*"]["float"]["float"] = "float"
-super_huge_dict["*"]["str"]["str"] = "str"
-super_huge_dict["*"]["vector"]["vector"] = "vector"
+dict_of_types["*"]["int"]["int"] = "int"
+dict_of_types["*"]["int"]["float"] = "float"
+dict_of_types["*"]["float"]["int"] = "float"
+dict_of_types["*"]["float"]["float"] = "float"
+dict_of_types["*"]["str"]["str"] = "str"
+dict_of_types["*"]["vector"]["vector"] = "vector"
 
-super_huge_dict["/"]["int"]["int"] = "int"
-super_huge_dict["/"]["int"]["float"] = "float"
-super_huge_dict["/"]["float"]["int"] = "float"
-super_huge_dict["/"]["float"]["float"] = "float"
-super_huge_dict["/"]["vector"]["vector"] = "vector"
+dict_of_types["/"]["int"]["int"] = "int"
+dict_of_types["/"]["int"]["float"] = "float"
+dict_of_types["/"]["float"]["int"] = "float"
+dict_of_types["/"]["float"]["float"] = "float"
+dict_of_types["/"]["vector"]["vector"] = "vector"
 
 
-super_huge_dict[">"]["int"]["int"] = "bool"
-super_huge_dict[">"]["int"]["float"] = "bool"
-super_huge_dict[">"]["float"]["int"] = "bool"
-super_huge_dict[">"]["float"]["float"] = "bool"
+dict_of_types[">"]["int"]["int"] = "bool"
+dict_of_types[">"]["int"]["float"] = "bool"
+dict_of_types[">"]["float"]["int"] = "bool"
+dict_of_types[">"]["float"]["float"] = "bool"
 
-super_huge_dict["<"]["int"]["int"] = "bool"
-super_huge_dict["<"]["int"]["float"] = "bool"
-super_huge_dict["<"]["float"]["int"] = "bool"
-super_huge_dict["<"]["float"]["float"] = "bool"
+dict_of_types["<"]["int"]["int"] = "bool"
+dict_of_types["<"]["int"]["float"] = "bool"
+dict_of_types["<"]["float"]["int"] = "bool"
+dict_of_types["<"]["float"]["float"] = "bool"
 
-super_huge_dict[">="]["int"]["int"] = "bool"
-super_huge_dict[">="]["int"]["float"] = "bool"
-super_huge_dict[">="]["float"]["int"] = "bool"
-super_huge_dict[">="]["float"]["float"] = "bool"
+dict_of_types[">="]["int"]["int"] = "bool"
+dict_of_types[">="]["int"]["float"] = "bool"
+dict_of_types[">="]["float"]["int"] = "bool"
+dict_of_types[">="]["float"]["float"] = "bool"
 
-super_huge_dict["<="]["int"]["int"] = "bool"
-super_huge_dict["<="]["int"]["float"] = "bool"
-super_huge_dict["<="]["float"]["int"] = "bool"
-super_huge_dict["<="]["float"]["float"] = "bool"
+dict_of_types["<="]["int"]["int"] = "bool"
+dict_of_types["<="]["int"]["float"] = "bool"
+dict_of_types["<="]["float"]["int"] = "bool"
+dict_of_types["<="]["float"]["float"] = "bool"
 
-super_huge_dict["=="]["int"]["int"] = "bool"
-super_huge_dict["=="]["int"]["float"] = "bool"
-super_huge_dict["=="]["float"]["int"] = "bool"
-super_huge_dict["=="]["float"]["float"] = "bool"
+dict_of_types["=="]["int"]["int"] = "bool"
+dict_of_types["=="]["int"]["float"] = "bool"
+dict_of_types["=="]["float"]["int"] = "bool"
+dict_of_types["=="]["float"]["float"] = "bool"
 
-super_huge_dict["!="]["int"]["int"] = "bool"
-super_huge_dict["!="]["int"]["float"] = "bool"
-super_huge_dict["!="]["float"]["int"] = "bool"
-super_huge_dict["!="]["float"]["float"] = "bool"
+dict_of_types["!="]["int"]["int"] = "bool"
+dict_of_types["!="]["int"]["float"] = "bool"
+dict_of_types["!="]["float"]["int"] = "bool"
+dict_of_types["!="]["float"]["float"] = "bool"
 
-super_huge_dict[".+"]["vector"]["vector"] = "vector"
-super_huge_dict[".-"]["vector"]["vector"] = "vector"
-super_huge_dict[".*"]["vector"]["vector"] = "vector"
-super_huge_dict["./"]["vector"]["vector"] = "vector"
+dict_of_types[".+"]["vector"]["vector"] = "vector"
+dict_of_types[".-"]["vector"]["vector"] = "vector"
+dict_of_types[".*"]["vector"]["vector"] = "vector"
+dict_of_types["./"]["vector"]["vector"] = "vector"
+
+dict_of_types["+="]["int"]["int"] = "int"
+dict_of_types["+="]["int"]["float"] = "float"
+dict_of_types["+="]["float"]["int"] = "float"
+dict_of_types["+="]["float"]["float"] = "float"
+dict_of_types["+="]["str"]["str"] = "str"
+dict_of_types["+="]["vector"]["vector"] = "vector"
+
+dict_of_types["-="]["int"]["int"] = "int"
+dict_of_types["-="]["int"]["float"] = "float"
+dict_of_types["-="]["float"]["int"] = "float"
+dict_of_types["-="]["float"]["float"] = "float"
+dict_of_types["-="]["str"]["str"] = "str"
+dict_of_types["-="]["vector"]["vector"] = "vector"
+
+dict_of_types["*="]["int"]["int"] = "int"
+dict_of_types["*="]["int"]["float"] = "float"
+dict_of_types["*="]["float"]["int"] = "float"
+dict_of_types["*="]["float"]["float"] = "float"
+dict_of_types["*="]["str"]["str"] = "str"
+dict_of_types["*="]["vector"]["vector"] = "vector"
+
+dict_of_types["/="]["int"]["int"] = "int"
+dict_of_types["/="]["int"]["float"] = "float"
+dict_of_types["/="]["float"]["int"] = "float"
+dict_of_types["/="]["float"]["float"] = "float"
+dict_of_types["/="]["vector"]["vector"] = "vector"
 
 
 
@@ -112,20 +139,28 @@ class TypeChecker(NodeVisitor):
         type1 = self.visit(node.left)
         type2 = self.visit(node.right)
         op = node.op
-        if super_huge_dict[op][type1][type2] == "":
+        if dict_of_types[op][type1][type2] == "":
             print(f"{node.lineno} Type error: {type1} {op} {type2} is not correct")
             return None
 
 
         if type1 == "vector" or type2 == "vector":
+            if isinstance(node.left, AST.Unary):
+                node.left = node.left.expr
+            if isinstance(node.right, AST.Unary):
+                node.right = node.right.expr
+
             if isinstance(node.left, AST.Id):
                 left_dims = self.symbol_table.get_v_dims(node.left.id)
                 node.v_type = self.symbol_table.get_v_type(node.left.id)
             elif isinstance(node.left, AST.BinExpr):
                 left_dims = node.left.dims
                 # 5 + (3 - 2 + 1)
+            elif isinstance(node.left, AST.Vector):
+                left_dims = node.left.dims
             else:
                 print("Error in visit_BinExpr")
+                print(node.left)
                 exit()
             if isinstance(node.right, AST.Id):
                 right_dims = self.symbol_table.get_v_dims(node.right.id)
@@ -133,18 +168,35 @@ class TypeChecker(NodeVisitor):
             elif isinstance(node.right, AST.BinExpr):
                 right_dims = node.right.dims
                 # 5 + (3 - 2 + 1)
+            elif isinstance(node.right, AST.Vector):
+                right_dims = node.right.dims
             else:
                 print("Error in visit_BinExpr")
+                print(node.left, node.right)
                 exit()
             # print(left_dims, right_dims)
-            for i in range(len(right_dims)):
+            # print(node.left.dims)
+            # print()
+            if len(right_dims) != len(left_dims):
+                print(f"{node.lineno} Nonequal vector dim")
+                return None
 
-                if left_dims[i] != right_dims[i]:
+            for i in range(len(right_dims)):
+                if isinstance(left_dims[i], AST.IntNum):
+                    ldi = left_dims[i].intnum
+                else:
+                    ldi = left_dims[i]
+                if isinstance(right_dims[i], AST.IntNum):
+                    rdi = right_dims[i].intnum
+                else:
+                    rdi = right_dims[i]
+
+                if ldi != rdi:
                     # print(left_dims[i], right_dims[i])
                     print(f"{node.lineno} Nonequal vector dim")
                     return None
             node.dims = left_dims
-        return super_huge_dict[op][type1][type2]
+        return dict_of_types[op][type1][type2]
 
 
     def visit_If(self, node: AST.If):
@@ -180,7 +232,10 @@ class TypeChecker(NodeVisitor):
             self.symbol_table.put(node.id, None)
 
         else:
-            self.symbol_table.put(node.id, t1)
+            if isinstance(node.id, AST.Id):
+                self.symbol_table.put(node.id.id, t1)
+            else:
+                self.symbol_table.put(node.id, t1)
 
         self.visit(node.body)
         self.symbol_table = self.symbol_table.popScope()
@@ -199,14 +254,22 @@ class TypeChecker(NodeVisitor):
         # for now idk how to do it
         val_type = self.visit(node.right)
         if val_type is None:
+            #PRINT
             return None
         left_id = node.left.id
         if node.op == '=':
-
-            self.symbol_table.put(left_id, val_type)
+            if isinstance(left_id, str):
+                self.symbol_table.put(left_id, val_type)
+            else:
+                self.symbol_table.put(left_id.id, val_type)
 
             if val_type == 'vector':
-                self.symbol_table.v_dims[left_id] = node.right.dims
+
+                if isinstance(node.right.dims, AST.IntNum):
+                    print(node.right)
+                    self.symbol_table.v_dims[left_id] = node.right.dims.intnum
+                else:
+                    self.symbol_table.v_dims[left_id] = node.right.dims
                 self.symbol_table.v_type[left_id] = node.right.v_type
         else:
             var_type = self.symbol_table.get(left_id)
@@ -223,8 +286,8 @@ class TypeChecker(NodeVisitor):
                         print(f"{node.lineno} wrong dimensions")
                         return None
 
-            if super_huge_dict[node.op][var_type][val_type] != '':
-                return super_huge_dict[node.op][var_type][val_type]
+            if dict_of_types[node.op][var_type][val_type] != '':
+                return dict_of_types[node.op][var_type][val_type]
             else:
                 print(f"{node.lineno} operation on given values is not defined")
                 return None
@@ -240,7 +303,7 @@ class TypeChecker(NodeVisitor):
             d = [len(node.vector[0])]
         else:
             d = [1]
-
+# MOŻNA FORALL
         for e in node.vector:
             if isinstance(e, AST.Vector):
                 self.visit(e)
@@ -269,6 +332,9 @@ class TypeChecker(NodeVisitor):
         return 'float'
 
     def visit_Variable(self, node: AST.Variable):
+        if node.id.id not in self.symbol_table.v_dims:
+            print(f"{node.lineno} id not specified earlier")
+            return None
         dims = self.symbol_table.v_dims[node.id.id]
 
         if len(dims) != len(node.index):
@@ -288,6 +354,9 @@ class TypeChecker(NodeVisitor):
         return self.symbol_table.v_type[node.id.id]
 
     def visit_Unary(self, node: AST.Unary):
+        if node.operation == 'TRANSPOSE':
+            if isinstance(node.expr, AST.Id):
+                self.symbol_table.v_dims[node.expr.id] = self.symbol_table.v_dims[node.expr.id][::-1]
         return self.visit(node.expr)
 
     def visit_MatrixFunc(self, node: AST.MatrixFunc):
@@ -295,13 +364,6 @@ class TypeChecker(NodeVisitor):
             if self.visit(el) != 'int':
                 print(f"{node.lineno} matrix function takes int")
                 return None
+
         return 'vector'
-
-
-
-
-
-    # def visit_Variable(self, node):
-    #     pass
-
 
