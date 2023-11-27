@@ -145,9 +145,14 @@ class TypeChecker(NodeVisitor):
 
 
         if type1 == "vector" or type2 == "vector":
+            was_l_tr = was_r_tr = False
             if isinstance(node.left, AST.Unary):
+                if node.left.operation == "TRANSPOSE":
+                    was_l_tr = True
                 node.left = node.left.expr
             if isinstance(node.right, AST.Unary):
+                if node.right.operation == "TRANSPOSE":
+                    was_r_tr = True
                 node.right = node.right.expr
 
             if isinstance(node.left, AST.Id):
@@ -162,6 +167,9 @@ class TypeChecker(NodeVisitor):
                 print("Error in visit_BinExpr")
                 print(node.left)
                 exit()
+            if was_l_tr:
+                left_dims = left_dims[::-1]
+
             if isinstance(node.right, AST.Id):
                 right_dims = self.symbol_table.get_v_dims(node.right.id)
                 node.v_type = self.symbol_table.get_v_type(node.left.id)
@@ -174,9 +182,13 @@ class TypeChecker(NodeVisitor):
                 print("Error in visit_BinExpr")
                 print(node.left, node.right)
                 exit()
+            if was_r_tr:
+                right_dims = right_dims[::-1]
+
             # print(left_dims, right_dims)
             # print(node.left.dims)
             # print()
+            # print(node.lineno, left_dims, right_dims)
             if len(right_dims) != len(left_dims):
                 print(f"{node.lineno} Nonequal vector dim")
                 return None
@@ -264,13 +276,16 @@ class TypeChecker(NodeVisitor):
                 self.symbol_table.put(left_id.id, val_type)
 
             if val_type == 'vector':
-
-                if isinstance(node.right.dims, AST.IntNum):
-                    print(node.right)
+                if isinstance(node.right, AST.Unary):
+                    self.symbol_table.v_dims[left_id] = node.right.expr.dims[::-1]
+                    self.symbol_table.v_type[left_id] = node.right.expr.v_type
+                elif isinstance(node.right.dims, AST.IntNum):
+                    # print(node.right)
                     self.symbol_table.v_dims[left_id] = node.right.dims.intnum
+                    self.symbol_table.v_type[left_id] = node.right.v_type
                 else:
                     self.symbol_table.v_dims[left_id] = node.right.dims
-                self.symbol_table.v_type[left_id] = node.right.v_type
+                    self.symbol_table.v_type[left_id] = node.right.v_type
         else:
             var_type = self.symbol_table.get(left_id)
             if var_type == 'vector' and val_type == 'vector':
@@ -354,9 +369,10 @@ class TypeChecker(NodeVisitor):
         return self.symbol_table.v_type[node.id.id]
 
     def visit_Unary(self, node: AST.Unary):
-        if node.operation == 'TRANSPOSE':
-            if isinstance(node.expr, AST.Id):
-                self.symbol_table.v_dims[node.expr.id] = self.symbol_table.v_dims[node.expr.id][::-1]
+        # if node.operation == 'TRANSPOSE':
+            # if isinstance(node.expr, AST.Id):
+            #     self.symbol_table.v_dims[node.expr.id] = self.symbol_table.v_dims[node.expr.id][::-1]
+
         return self.visit(node.expr)
 
     def visit_MatrixFunc(self, node: AST.MatrixFunc):

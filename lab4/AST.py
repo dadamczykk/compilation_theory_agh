@@ -187,6 +187,7 @@ class Unary(Node):
     operation: str
     expr: Any
     lineno: Any = 0
+    dims: Any = None
 
 
 class Error(Node):

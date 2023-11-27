@@ -2,7 +2,7 @@
 # binary operators
 # transposition
 A = [[1], [2]];
-B = [[1], [2]] + [[1],[2]];
+B = ([[1], [2]] + [[1],[2]])';
 D1 = A.+B' ; # add element-wise A with transpose of B
 D2 -= A.-B' ; # substract element-wise A with transpose of B
 D3 *= A.*B' ; # multiply element-wise A with transpose of B
