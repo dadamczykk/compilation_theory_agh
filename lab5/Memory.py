@@ -1,55 +1,44 @@
-import inspect
+class Memory:
+    def __init__(self, name):  # memory name
+        self.scope_name = name
+        self.memory = {}
 
-__all__ = ['on', 'when']
+    def has_key(self, name):  # variable name
+        return name in self.memory
 
+    def get(self, name):  # gets from memory current value of variable <name>
+        return self.memory[name]
 
-def on(param_name):
-    def f(fn):
-        dispatcher = Dispatcher(param_name, fn)
-        return dispatcher
-    return f
-
-
-def when(param_type):
-    def f(fn):
-        frame = inspect.currentframe().f_back
-        func_name = fn.func_name if 'func_name' in dir(fn) else fn.__name__
-        dispatcher = frame.f_locals[func_name]
-        if not isinstance(dispatcher, Dispatcher):
-            dispatcher = dispatcher.dispatcher
-        dispatcher.add_target(param_type, fn)
-
-        def ff(*args, **kw):
-            return dispatcher(*args, **kw)
-        ff.dispatcher = dispatcher
-        return ff
-    return f
+    def put(self, name, value):  # puts into memory current value of variable <name>
+        self.memory[name] = value
 
 
-class Dispatcher(object):
-    def __init__(self, param_name, fn):
-        self.param_index = self.__argspec(fn).args.index(param_name)
-        self.param_name = param_name
-        self.targets = {}
+class MemoryStack:
+    def __init__(self, memory=None):  # initialize memory stack with memory <memory>
+        if memory is None:
+            memory = Memory('global')
+        self.stack = [memory]
 
-    def __call__(self, *args, **kw):
-        typ = args[self.param_index].__class__
-        d = self.targets.get(typ)
-        if d is not None:
-            return d(*args, **kw)
-        else:
-            issub = issubclass
-            t = self.targets
-            ks = iter(t)
-            return [t[k](*args, **kw) for k in ks if issub(typ, k)]
+    def get(self, name):  # gets from memory stack current value of variable <name>
+        for i in range(len(self.stack) - 1, -1, -1):
+            if self.stack[i].has_key(name):
+                return self.stack[i].get(name)
+        return None
 
-    def add_target(self, typ, target):
-        self.targets[typ] = target
+    def insert(self, name, value):  # inserts into memory stack variable <name> with value <value>
+        self.stack[-1].put(name, value)
 
-    @staticmethod
-    def __argspec(fn):
-        # Support for Python 3 type hints requires inspect.getfullargspec
-        if hasattr(inspect, 'getfullargspec'):
-            return inspect.getfullargspec(fn)
-        else:
-            return inspect.getargspec(fn)
+    def set(self, name, value):  # sets variable <name> to value <value>
+        self.stack[-1].put(name, value)
+
+    def push(self, memory: str):  # pushes memory <memory> onto the stack
+        self.stack.append(Memory(memory))
+
+    def pop(self):  # pops the top memory from the stack
+        for key in list(self.stack[-1].memory.keys()):
+            for i in range(len(self.stack) - 2, -1, -1):
+                if self.stack[i].has_key(key):
+                    self.stack[i].put(key, self.stack[-1].get(key))
+                    break
+
+        self.stack.pop()

@@ -6,6 +6,9 @@ class Node(object):
     def print_indent(self, indent):
         print(indent * "|\t", end="")
 
+    def accept(self, visitor):
+        return visitor.visit(self)
+
 
 @dataclass
 class InstrOrEmpty(Node):
