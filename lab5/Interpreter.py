@@ -236,7 +236,7 @@ class Interpreter(object):
 
     @when(AST.Vector)
     def visit(self, node: AST.Vector):
-        return [element.accept(self) for element in node.elements]
+        return [element.accept(self) for element in node.vector]
 
     @when(AST.Variable)
     def visit(self, node: AST.Variable):
