@@ -125,17 +125,30 @@ class Interpreter(object):
         condition = node.cond.accept(self)
         if condition:
             self.memory.push('if')
-            if isinstance(node.if_body, AST.Instructions):
-                node.if_body.accept(self)
-            else:
-                for instruction in node.if_body:
-                    instruction.accept(self)
-            self.memory.pop()
+            try:
+                if isinstance(node.if_body, AST.Instructions):
+                    node.if_body.accept(self)
+                else:
+                    for instruction in node.if_body:
+                        instruction.accept(self)
+            except BreakException as e:
+                raise e
+            except ReturnValueException as e:
+                raise e
+            finally:
+                self.memory.pop()
         else:
             if node.else_body is not None:
                 self.memory.push('else')
-                node.else_body.accept(self)
-                self.memory.pop()
+                try:
+                    node.else_body.accept(self)
+                except BreakException as e:
+                    raise e
+                except ReturnValueException as e:
+                    raise e
+                finally:
+                    self.memory.pop()
+
 
     @when(AST.While)
     def visit(self, node: AST.While):
@@ -185,7 +198,7 @@ class Interpreter(object):
 
     @when(AST.Continue)
     def visit(self, node: AST.Continue):
-        raise ContinueException
+        raise ContinueException()
 
     @when(AST.Print)
     def visit(self, node: AST.Print):

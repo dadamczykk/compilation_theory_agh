@@ -6,13 +6,11 @@ from lab4.TypeChecker import TypeChecker
 import os
 from lab5.Interpreter import Interpreter
 
-
-
 if __name__ == "__main__":
     folder_path = 'tests'
     file_list = os.listdir(folder_path)
     for filename in file_list:
-        if filename != "matrix.m": continue
+        # if filename != "matrix.m": continue
         file_path = os.path.join(folder_path, filename)
 
         if os.path.isfile(file_path):
